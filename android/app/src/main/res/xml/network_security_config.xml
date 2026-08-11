@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Bunyad is usually deployed on a machine inside the same network as the phones
+  that use it, reached over plain http on a LAN address. Android 9 and newer
+  refuse cleartext by default, so it is allowed here.
+
+  Once the server is behind HTTPS, delete this file and the android:networkSecurityConfig
+  line in AndroidManifest.xml — the platform default (HTTPS only) is the safer setting
+  and nothing in the app depends on cleartext.
+-->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="true">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+</network-security-config>

@@ -1,0 +1,55 @@
+name: bunyad
+description: "Bunyad — construction expense tracker"
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.10.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # State. Riverpod keeps the screens declarative — a screen watches a provider
+  # and rebuilds, the same way the web views re-rendered from api results.
+  flutter_riverpod: ^2.6.1
+
+  # HTTP. Dio for its interceptors (the bearer header goes on in one place) and
+  # its multipart support for photo uploads.
+  dio: ^5.7.0
+
+  # Routing, mirroring the SPA's hash routes.
+  go_router: ^14.6.2
+
+  # The bearer token lives in the Keychain / EncryptedSharedPreferences, never
+  # in plain shared preferences.
+  flutter_secure_storage: ^9.2.2
+
+  # Bills and delivery slips: camera or gallery.
+  image_picker: ^1.1.2
+
+  # Thumbnails, cached on disk. Needs auth headers, which it forwards.
+  cached_network_image: ^3.4.1
+
+  intl: ^0.19.0
+  cupertino_icons: ^1.0.8
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
+
+  fonts:
+    # The Modernist system's one typeface. Bundled rather than fetched at run
+    # time so the first paint is never the wrong font.
+    - family: Archivo
+      fonts:
+        - asset: assets/fonts/Archivo-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/Archivo-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Archivo-ExtraBold.ttf
+          weight: 800
