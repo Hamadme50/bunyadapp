@@ -88,6 +88,10 @@ class Api {
   /// Signs in and returns the long-lived bearer token this app uses. The web
   /// app's `/auth/login` sets a cookie instead; this one hands over the token.
   static const String token = '/auth/token';
+
+  /// Creates an account and returns the same token, so joining signs you in.
+  static const String register = '/auth/register';
+
   static const String logout = '/auth/logout';
   static const String me = '/auth/me';
   static const String password = '/auth/password';

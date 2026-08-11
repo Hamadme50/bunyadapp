@@ -8,6 +8,7 @@ import '../../data/models.dart';
 import '../../state/session.dart';
 import '../routes.dart';
 import '../sheets/project_sheet.dart';
+import '../widgets/loading.dart';
 import '../widgets/primitives.dart';
 import '../widgets/shell.dart';
 
@@ -39,9 +40,11 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     final async = ref.watch(dashboardProvider);
 
     return Scaffold(
-      appBar: const BunyadTopBar(),
+      // The loader stands in for the whole page, top bar included, so arriving
+      // here looks like the splash rather than an empty shell.
+      appBar: async.isLoading ? null : const BunyadTopBar(),
       body: async.when(
-        loading: () => const LoadingState(),
+        loading: () => const BunyadLoadingView(),
         error: (error, _) => ErrorStateView(
           message: error is ApiException ? error.message : '$error',
           onRetry: _refresh,

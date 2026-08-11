@@ -11,6 +11,7 @@ import '../routes.dart';
 import '../sheets/expense_sheet.dart';
 import '../sheets/stage_sheet.dart';
 import '../widgets/photos.dart';
+import '../widgets/loading.dart';
 import '../widgets/primitives.dart';
 import '../widgets/sheet.dart';
 import '../widgets/shell.dart';
@@ -113,8 +114,10 @@ class _StageScreenState extends ConsumerState<StageScreen> {
   Widget build(BuildContext context) {
     final data = _data;
 
+    final loading = data == null && _error == null;
+
     return Scaffold(
-      appBar: const BunyadTopBar(),
+      appBar: loading ? null : const BunyadTopBar(),
       floatingActionButton: data != null && data.canEdit
           ? FloatingActionButton.extended(
               onPressed: () => _addExpense(),
@@ -136,7 +139,7 @@ class _StageScreenState extends ConsumerState<StageScreen> {
             onRetry: _load,
             onBack: () => context.goDashboard(),
           ),
-        _ => const LoadingState(),
+        _ => const BunyadLoadingView(),
       },
     );
   }

@@ -6,6 +6,34 @@ import '../../core/tokens.dart';
 /// Each one is the CSS class of the same name, drawn in Flutter.
 
 // ═══════════════════════════════════════════════════════════════════════════
+//  The mark
+// ═══════════════════════════════════════════════════════════════════════════
+
+/// `icon.png` — the launcher icon, the splash, the loading screens and the top
+/// bar all draw this one file.
+///
+/// The 128 default is not arbitrary: flutter_native_splash writes the artwork
+/// out at 128px for mdpi through 512px for xxxhdpi, which is 128 dp at every
+/// density. Match it on the loading screens and the platform splash hands over
+/// without anything moving.
+class BunyadLogo extends StatelessWidget {
+  const BunyadLogo({super.key, this.size = 128});
+
+  final double size;
+
+  @override
+  Widget build(BuildContext context) => Image.asset(
+        'icon.png',
+        width: size,
+        height: size,
+        filterQuality: FilterQuality.medium,
+        // The logo is the app's identity, not decoration a screen reader needs
+        // to announce on every page change.
+        excludeFromSemantics: true,
+      );
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
 //  Buttons
 // ═══════════════════════════════════════════════════════════════════════════
 

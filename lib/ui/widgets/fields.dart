@@ -47,6 +47,7 @@ class BunyadInput extends StatelessWidget {
   const BunyadInput({
     super.key,
     required this.controller,
+    this.focusNode,
     this.hintText,
     this.keyboardType,
     this.obscureText = false,
@@ -86,6 +87,7 @@ class BunyadInput extends StatelessWidget {
       );
 
   final TextEditingController controller;
+  final FocusNode? focusNode;
   final String? hintText;
   final TextInputType? keyboardType;
   final bool obscureText;
@@ -108,6 +110,7 @@ class BunyadInput extends StatelessWidget {
   @override
   Widget build(BuildContext context) => TextField(
         controller: controller,
+        focusNode: focusNode,
         enabled: enabled,
         autofocus: autofocus,
         obscureText: obscureText,

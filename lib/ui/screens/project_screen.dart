@@ -10,6 +10,7 @@ import '../routes.dart';
 import '../sheets/project_sheet.dart';
 import '../sheets/share_sheet.dart';
 import '../sheets/stage_sheet.dart';
+import '../widgets/loading.dart';
 import '../widgets/primitives.dart';
 import '../widgets/sheet.dart';
 import '../widgets/shell.dart';
@@ -50,8 +51,11 @@ class _ProjectScreenState extends ConsumerState<ProjectScreen> {
     final async = ref.watch(projectProvider(widget.projectId));
     final project = _current ?? async.valueOrNull;
 
+    // Nothing to show yet and nothing gone wrong: the loader takes the page.
+    final loading = project == null && async.isLoading;
+
     return Scaffold(
-      appBar: const BunyadTopBar(),
+      appBar: loading ? null : const BunyadTopBar(),
       body: project != null
           ? RefreshIndicator(
               color: T.accent,
@@ -59,7 +63,7 @@ class _ProjectScreenState extends ConsumerState<ProjectScreen> {
               child: _body(project),
             )
           : async.when(
-              loading: () => const LoadingState(),
+              loading: () => const BunyadLoadingView(),
               error: (error, _) => ErrorStateView(
                 message: error is ApiException ? error.message : '$error',
                 gone: error is ApiException && (error.status == 404 || error.status == 403),

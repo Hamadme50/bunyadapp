@@ -91,12 +91,14 @@ class _Brand extends StatelessWidget {
           onTap: onTap,
           borderRadius: T.brMd,
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const BrandMark(),
-                const SizedBox(width: 10),
+                // The launcher icon itself, so the bar carries the same mark
+                // the phone's home screen does. The wordmark stays beside it.
+                const BunyadLogo(size: 30),
+                const SizedBox(width: 8),
                 Text(
                   kAppName.toUpperCase(),
                   style: TextStyle(
@@ -316,24 +318,7 @@ class ViewerNotice extends StatelessWidget {
   }
 }
 
-/// The screen while its first request is in flight.
-class LoadingState extends StatelessWidget {
-  const LoadingState({super.key});
-
-  @override
-  Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.symmetric(vertical: 40, horizontal: T.s4),
-        child: Row(
-          children: [
-            const Spinner(),
-            const SizedBox(width: 10),
-            Text('Loading…', style: T.bodySm.copyWith(color: T.ink(0.5))),
-          ],
-        ),
-      );
-}
-
-/// The screen when that request failed. Mirrors the web shell's `errorState`.
+/// The screen when a request failed. Mirrors the web shell's `errorState`.
 class ErrorStateView extends StatelessWidget {
   const ErrorStateView({
     super.key,

@@ -71,9 +71,19 @@ The Android bundle id and the iOS bundle identifier are both
 
 ## How signing in works
 
-The app calls `POST /api/auth/token`, which returns a **bearer token good for
-two years**, and keeps it in the Keychain on iOS and EncryptedSharedPreferences
-on Android. Every later call carries it as `Authorization: Bearer …`.
+The app opens on **Join**. `POST /api/auth/register` creates the account and
+returns a token in the same response, so there is no second step — you are
+signed in the moment the account exists. Anyone who already has an account takes
+the **Sign in** link at the bottom, which calls `POST /api/auth/token` instead.
+
+Self-registered accounts are always plain users. Administrators are only ever
+made by other administrators from **People**, and an installation can close
+sign-ups altogether with `BUNYAD_REGISTRATION_OPEN=false` — the join screen then
+reports that the server is not taking sign-ups.
+
+Either way the app ends up with a **bearer token good for two years**, kept in
+the Keychain on iOS and EncryptedSharedPreferences on Android. Every later call
+carries it as `Authorization: Bearer …`.
 
 That means a phone signs in once and stays signed in. Two things end a session:
 
@@ -91,7 +101,8 @@ Every screen and every feature the web app has:
 
 | Screen | What it does |
 | --- | --- |
-| **Sign in** | Email and password. A password issued by an administrator must be replaced before anything else opens. |
+| **Join** | Where the app opens. Name, email and a password of your own — the server creates the account and signs you in with the same call, so the dashboard is next. "Already have an account? Sign in" sits at the bottom. |
+| **Sign in** | Email and password, with a way back to Join. A password issued by an administrator must be replaced before anything else opens. |
 | **Dashboard** | The greeting, the portfolio totals, and every project — searchable once there are more than three. An administrator sees the whole installation, their own work first, under a "Projects you oversee" divider. |
 | **Project** | The total, the team, the stage ladder with each stage's share, "Where the money went" by head, and the expense heads this project suggests. Editing, sharing, leaving and deleting, as your access allows. |
 | **Stage** | The expense timeline, newest first, 40 at a time. Add, edit, move and delete expenses; tap a suggestion chip to start one pre-filled. |
@@ -102,6 +113,46 @@ Every screen and every feature the web app has:
 Viewer access and an administrator's read-only view of somebody else's project
 both show the same notice bar as the web app, and every control that would
 change something is switched off.
+
+## The icon and the splash
+
+Both are generated from **`icon.png` at the project root** — that one file is
+the only thing to replace.
+
+```bash
+dart run flutter_launcher_icons
+```
+
+```bash
+dart run flutter_native_splash:create
+```
+
+Everything is white-backed, because the artwork is a transparent PNG and both
+platforms need the plate stated rather than inherited:
+
+- **Android** gets an adaptive icon: white background, the artwork inset 18% so
+  the trowel's handle survives a circular launcher mask.
+- **iOS** gets the icon flattened onto white — the App Store rejects an icon
+  with an alpha channel outright.
+- **The splash** is white with the logo centred, in light *and* dark mode. The
+  app has no dark theme, so a black splash would flash before a white first
+  frame.
+
+The app draws that same file in three more places, so the mark on the home
+screen is the mark inside the app:
+
+- the **loading screens**, at 128 dp — the exact size the native splash writes
+  it out at, so a cold start reads as one continuous screen (native splash →
+  boot → dashboard) with nothing jumping;
+- the **top bar**, at 30 dp, beside the `BUNYAD` wordmark;
+- and nowhere else. The sign-in poster keeps the plain accent square, because a
+  full-colour brick wall on the deep blue gradient fights with it.
+
+> Regenerating the splash rewrites `android/app/src/main/res/values-night*/styles.xml`.
+> Those files have one hand-edit — `NormalTheme`'s `windowBackground` is pinned
+> to `#FFFFFF` instead of `?android:colorBackground` — which keeps dark-mode
+> devices from flashing black behind the Flutter view. Re-apply it if you
+> regenerate.
 
 ## Layout
 

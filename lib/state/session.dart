@@ -85,6 +85,16 @@ class SessionController extends StateNotifier<SessionState> {
     _apply(await _repo.signIn(email, password));
   }
 
+  /// Signing yourself up leaves you signed in — the server hands back a token
+  /// with the new account.
+  Future<void> register({
+    required String name,
+    required String email,
+    required String password,
+  }) async {
+    _apply(await _repo.register(name: name, email: email, password: password));
+  }
+
   Future<void> signOut() async {
     await _repo.signOut();
     state = const SessionState.signedOut();

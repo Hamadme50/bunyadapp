@@ -7,6 +7,7 @@ import 'screens/account_screen.dart';
 import 'screens/admin_screen.dart';
 import 'screens/boot_screen.dart';
 import 'screens/dashboard_screen.dart';
+import 'screens/join_screen.dart';
 import 'screens/login_screen.dart';
 import 'screens/password_screen.dart';
 import 'screens/project_screen.dart';
@@ -17,6 +18,7 @@ class Routes {
   const Routes._();
 
   static const String boot = '/boot';
+  static const String join = '/join';
   static const String login = '/login';
   static const String password = '/password';
   static const String dashboard = '/';
@@ -30,6 +32,8 @@ class Routes {
 
 /// Short names for the navigation the screens actually do.
 extension BunyadNavigation on BuildContext {
+  void goJoin() => go(Routes.join);
+  void goLogin() => go(Routes.login);
   void goDashboard() => go(Routes.dashboard);
   void goProject(String projectId) => go(Routes.project(projectId));
   void goStage(String projectId, String stageId) => go(Routes.stage(projectId, stageId));
@@ -59,12 +63,18 @@ final routerProvider = Provider<GoRouter>((ref) {
       final status = ref.read(sessionProvider).status;
       final at = state.matchedLocation;
 
-      final atGate = at == Routes.boot || at == Routes.login || at == Routes.password;
+      final atGate = at == Routes.boot ||
+          at == Routes.join ||
+          at == Routes.login ||
+          at == Routes.password;
 
       return switch (status) {
         SessionStatus.checking => at == Routes.boot ? null : Routes.boot,
         SessionStatus.unreachable => at == Routes.boot ? null : Routes.boot,
-        SessionStatus.signedOut => at == Routes.login ? null : Routes.login,
+        // Joining is the way in by default; signing in is one tap from there,
+        // so both addresses are allowed to stand.
+        SessionStatus.signedOut =>
+          (at == Routes.join || at == Routes.login) ? null : Routes.join,
         // An issued password has to be replaced before anything else opens.
         SessionStatus.mustChangePassword => at == Routes.password ? null : Routes.password,
         SessionStatus.signedIn => atGate ? Routes.dashboard : null,
@@ -73,6 +83,7 @@ final routerProvider = Provider<GoRouter>((ref) {
 
     routes: [
       GoRoute(path: Routes.boot, builder: (context, state) => const BootScreen()),
+      GoRoute(path: Routes.join, builder: (context, state) => const JoinScreen()),
       GoRoute(path: Routes.login, builder: (context, state) => const LoginScreen()),
       GoRoute(path: Routes.password, builder: (context, state) => const PasswordScreen()),
       GoRoute(path: Routes.dashboard, builder: (context, state) => const DashboardScreen()),

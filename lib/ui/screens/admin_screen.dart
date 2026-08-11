@@ -8,6 +8,7 @@ import '../../data/api_client.dart';
 import '../../data/models.dart';
 import '../../state/session.dart';
 import '../widgets/fields.dart';
+import '../widgets/loading.dart';
 import '../widgets/primitives.dart';
 import '../widgets/sheet.dart';
 import '../widgets/shell.dart';
@@ -27,9 +28,9 @@ class AdminScreen extends ConsumerWidget {
     Future<void> reload() => ref.refresh(usersProvider.future);
 
     return Scaffold(
-      appBar: const BunyadTopBar(active: NavTab.people),
+      appBar: async.isLoading ? null : const BunyadTopBar(active: NavTab.people),
       body: async.when(
-        loading: () => const LoadingState(),
+        loading: () => const BunyadLoadingView(),
         error: (error, _) => ErrorStateView(
           message: error is ApiException ? error.message : '$error',
           onRetry: reload,

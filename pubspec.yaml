@@ -39,8 +39,67 @@ dev_dependencies:
     sdk: flutter
   flutter_lints: ^5.0.0
 
+  # Generate the launcher icons and the native splash from icon.png. Both are
+  # build-time tools — nothing here ships in the app.
+  flutter_launcher_icons: ^0.14.3
+  flutter_native_splash: ^2.4.4
+
+# ── launcher icon ───────────────────────────────────────────────────────────
+#
+# Regenerate after changing icon.png:  dart run flutter_launcher_icons
+flutter_launcher_icons:
+  image_path: "icon.png"
+
+  android: true
+  # The artwork is a transparent PNG, so the plate behind it has to be stated
+  # rather than inherited — white, matching the splash and the app's own ground.
+  adaptive_icon_background: "#FFFFFF"
+  adaptive_icon_foreground: "icon.png"
+  # Adaptive icons crop to a circle on many launchers; the inset keeps the
+  # trowel's handle inside the safe zone instead of clipped at the corner.
+  adaptive_icon_foreground_inset: 18
+  min_sdk_android: 21
+
+  ios: true
+  # iOS rejects an icon with an alpha channel outright, so it is flattened
+  # onto white here.
+  remove_alpha_ios: true
+  background_color_ios: "#FFFFFF"
+
+# ── native splash ───────────────────────────────────────────────────────────
+#
+# Regenerate after changing icon.png:  dart run flutter_native_splash:create
+flutter_native_splash:
+  color: "#FFFFFF"
+  image: "icon.png"
+  android: true
+  ios: true
+  web: false
+
+  # Bunyad has no dark theme — the app is light whatever the system setting is,
+  # so the splash stays white in dark mode rather than flashing black before a
+  # white first frame.
+  color_dark: "#FFFFFF"
+  image_dark: "icon.png"
+
+  # Android 12+ draws its own splash through the platform API, which masks the
+  # image to a circle — so it gets its own entry with a matching background.
+  android_12:
+    image: "icon.png"
+    color: "#FFFFFF"
+    icon_background_color: "#FFFFFF"
+    image_dark: "icon.png"
+    color_dark: "#FFFFFF"
+    icon_background_color_dark: "#FFFFFF"
+
 flutter:
   uses-material-design: true
+
+  assets:
+    # The same file the launcher icon and splash are generated from, shown in
+    # the app's own loading screens so the hand-off from the native splash is
+    # seamless.
+    - icon.png
 
   fonts:
     # The Modernist system's one typeface. Bundled rather than fetched at run

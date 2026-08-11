@@ -7,6 +7,7 @@ import '../../data/api_client.dart';
 import '../../global.dart';
 import '../../state/session.dart';
 import '../widgets/fields.dart';
+import '../widgets/loading.dart';
 import '../widgets/primitives.dart';
 import '../widgets/sheet.dart';
 import '../widgets/shell.dart';
@@ -69,7 +70,7 @@ class _AccountScreenState extends ConsumerState<AccountScreen> {
   @override
   Widget build(BuildContext context) {
     final user = ref.watch(currentUserProvider);
-    if (user == null) return const Scaffold(body: LoadingState());
+    if (user == null) return const BunyadLoadingPage();
 
     return Scaffold(
       appBar: const BunyadTopBar(active: NavTab.account),

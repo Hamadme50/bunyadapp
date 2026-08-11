@@ -23,6 +23,25 @@ class BunyadRepository {
     return result.session;
   }
 
+  /// Creates an account and keeps the token that comes back with it — joining
+  /// and signing in are one call, so the join screen goes straight to the
+  /// dashboard rather than asking for the password again.
+  Future<SessionView> register({
+    required String name,
+    required String email,
+    required String password,
+  }) async {
+    final result = TokenView.fromJson(
+      _obj(await client.post(Api.register, {
+        'name': name.trim(),
+        'email': email.trim(),
+        'password': password,
+      })),
+    );
+    await client.setToken(result.token);
+    return result.session;
+  }
+
   /// The session behind the stored token, or a 401 if it is no longer good.
   Future<SessionView> me() async => SessionView.fromJson(_obj(await client.get(Api.me)));
 

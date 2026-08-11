@@ -5,6 +5,7 @@ import '../../core/tokens.dart';
 import '../../data/api_client.dart';
 import '../../global.dart';
 import '../../state/session.dart';
+import '../routes.dart';
 import '../widgets/fields.dart';
 import '../widgets/primitives.dart';
 import '../widgets/shell.dart';
@@ -93,13 +94,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     Text('Sign in', style: T.h2),
                     const SizedBox(height: 6),
                     Text(
-                      'Accounts are issued by your administrator.',
+                      'Welcome back. Pick up where your build left off.',
                       style: T.body.copyWith(fontSize: 14, color: T.ink(0.6)),
                     ),
 
                     if (_error != null) ...[
                       const SizedBox(height: T.s4),
-                      _LoginError(_error!),
+                      LoginError(_error!),
                     ],
 
                     const SizedBox(height: T.s4),
@@ -150,7 +151,27 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       onPressed: _submit,
                     ),
 
+                    // Back to joining, for anyone who arrived here by mistake.
+                    const SizedBox(height: T.s6),
+                    const Divider(color: T.hairline, height: 1),
                     const SizedBox(height: T.s4),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'New to Bunyad?',
+                          style: T.body.copyWith(fontSize: 13, color: T.ink(0.6)),
+                        ),
+                        const SizedBox(width: 4),
+                        Btn(
+                          label: 'Create an account',
+                          kind: BtnKind.ghost,
+                          onPressed: _busy ? null : () => context.goJoin(),
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: T.s3),
                     // Which server this build talks to is not obvious on a phone
                     // the way a browser's address bar makes it obvious.
                     Text(
@@ -244,8 +265,8 @@ class LoginPoster extends StatelessWidget {
 }
 
 /// `.login-error` — a tinted panel with the accent bar down its left edge.
-class _LoginError extends StatelessWidget {
-  const _LoginError(this.message);
+class LoginError extends StatelessWidget {
+  const LoginError(this.message, {super.key});
 
   final String message;
 
