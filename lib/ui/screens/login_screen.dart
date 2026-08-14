@@ -174,14 +174,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       ],
                     ),
 
-                    const SizedBox(height: T.s3),
-                    // Which server this build talks to is not obvious on a phone
-                    // the way a browser's address bar makes it obvious.
-                    Text(
-                      kServerUrl,
-                      textAlign: TextAlign.center,
-                      style: T.body.copyWith(fontSize: 11, color: T.ink(0.4)),
-                    ),
                   ],
                 ),
               ),

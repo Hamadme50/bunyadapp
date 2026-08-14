@@ -25,7 +25,7 @@ library;
 ///   flutter build apk --dart-define=BUNYAD_SERVER_URL=https://bunyad.example.com
 const String kServerUrl = String.fromEnvironment(
   'BUNYAD_SERVER_URL',
-  defaultValue: 'https://bunyad.inverterzone.net',
+  defaultValue: 'https://bunyadapp.com',
 );
 
 /// The API root. Everything the app calls hangs off this.
