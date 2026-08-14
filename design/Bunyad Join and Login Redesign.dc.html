@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;800&display=swap">
+  <style>
+    *{box-sizing:border-box;}
+    body{margin:0;}
+    input::placeholder{color:rgba(32,30,29,0.38);font-family:'Archivo',sans-serif;}
+    ::selection{background:rgba(2,76,125,0.25);}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+  </style>
+</helmet>
+<div style="min-height:100vh;background:#D7D3D3;padding:56px 24px 40px;font-family:'Archivo',sans-serif;display:flex;flex-direction:column;align-items:center;">
+
+  <div style="width:390px;height:844px;border-radius:28px;overflow:hidden;box-shadow:0 24px 56px rgba(0,0,0,0.24);position:relative;background:#F3F2F2;">
+
+    <sc-if value="{{ isGate }}" hint-placeholder-val="{{ true }}">
+      <div style="animation:fadeIn .3s ease;height:100%;width:100%;display:flex;flex-direction:column;padding:28px 24px;background-image:linear-gradient(180deg, rgba(1,37,64,0.05) 0%, rgba(1,37,64,0.28) 38%, rgba(3,20,34,0.80) 60%, rgba(3,20,34,0.95) 84%, rgba(3,20,34,0.97) 100%), url('assets/site-supervisor.png');background-size:cover,cover;background-position:center,68% 22%;background-repeat:no-repeat,no-repeat;">
+        <div style="display:flex;align-items:center;gap:10px;flex:none;">
+          <div style="width:16px;height:16px;border-radius:6px;background:#F3F2F2;flex:none;"></div>
+          <div style="font:800 18px/1 Archivo,sans-serif;letter-spacing:-0.36px;color:#F3F2F2;text-transform:uppercase;">Bunyad</div>
+        </div>
+
+        <div style="flex:1.9;"></div>
+
+        <div style="flex:none;">
+          <div style="font:800 33px/1.14 Archivo,sans-serif;letter-spacing:-0.5px;color:#F3F2F2;">Every rupee your building costs, in one book.</div>
+          <div style="margin-top:12px;font:400 15px/1.5 Archivo,sans-serif;color:rgba(243,242,242,0.88);">From the plot walk to the punch list — every rupee logged on site, stage by stage.</div>
+
+          <div style="margin-top:28px;display:flex;flex-direction:column;gap:12px;">
+            <button onClick="{{ goJoin }}" style="all:unset;box-sizing:border-box;display:flex;align-items:center;justify-content:flex-start;width:100%;background:#024C7D;color:#F3F2F2;border-radius:10px;padding:13px 16px;font:800 15px/1.2 Archivo,sans-serif;cursor:pointer;box-shadow:0 2px 8px rgba(2,76,125,0.35);" style-hover="background:#003356;">Join</button>
+            <button onClick="{{ goLogin }}" style="all:unset;box-sizing:border-box;display:flex;align-items:center;justify-content:flex-start;width:100%;background:rgba(255,255,255,0.14);border:1px solid rgba(255,255,255,0.4);backdrop-filter:blur(8px);color:#F3F2F2;border-radius:10px;padding:13px 16px;font:800 15px/1.2 Archivo,sans-serif;cursor:pointer;" style-hover="background:rgba(255,255,255,0.24);">Log in</button>
+          </div>
+        </div>
+
+        <div style="flex:0.7;"></div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isJoin }}" hint-placeholder-val="{{ false }}">
+      <div style="animation:fadeIn .3s ease;height:100%;width:100%;overflow-y:auto;padding:12px;">
+        <div style="position:relative;border-radius:16px;box-shadow:0 8px 24px rgba(45,43,43,0.141),0 24px 56px rgba(45,43,43,0.161);padding:28px 24px;background-image:linear-gradient(165deg, rgba(2,76,125,0.5) 0%, rgba(1,37,64,0.82) 50%, rgba(3,20,34,0.93) 100%), url('assets/site-supervisor.png');background-size:cover,cover;background-position:center,60% 12%;background-repeat:no-repeat,no-repeat;">
+          <button onClick="{{ goGate }}" aria-label="Back" style="all:unset;position:absolute;top:16px;left:16px;width:32px;height:32px;border-radius:999px;background:rgba(255,255,255,0.16);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.3);display:flex;align-items:center;justify-content:center;cursor:pointer;" style-hover="background:rgba(255,255,255,0.28);">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F3F2F2" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg>
+          </button>
+          <div style="display:flex;align-items:center;gap:10px;margin-top:24px;">
+            <div style="width:16px;height:16px;border-radius:6px;background:#F3F2F2;flex:none;"></div>
+            <div style="font:800 18px/1 Archivo,sans-serif;letter-spacing:-0.36px;color:#F3F2F2;text-transform:uppercase;">Bunyad</div>
+          </div>
+          <div style="margin-top:20px;font:800 26px/1.14 Archivo,sans-serif;letter-spacing:-0.4px;color:#F3F2F2;">Every rupee your building costs, in one book.</div>
+          <div style="margin-top:10px;font:400 14px/1.5 Archivo,sans-serif;color:rgba(243,242,242,0.9);">From the plot walk to the punch list — log the bricks, the cement, the mistri and the maps, stage by stage, bill in hand.</div>
+          <div style="margin-top:20px;">
+            <div style="padding-top:10px;margin-bottom:10px;border-top:1px solid rgba(255,255,255,0.32);font:400 13px/1.5 Archivo,sans-serif;color:rgba(243,242,242,0.9);">Stages you name yourself — plot, foundations, every floor up.</div>
+            <div style="padding-top:10px;margin-bottom:10px;border-top:1px solid rgba(255,255,255,0.32);font:400 13px/1.5 Archivo,sans-serif;color:rgba(243,242,242,0.9);">Every expense stamped with who logged it, right from site.</div>
+            <div style="padding-top:10px;margin-bottom:0;border-top:1px solid rgba(255,255,255,0.32);font:400 13px/1.5 Archivo,sans-serif;color:rgba(243,242,242,0.9);">Share the project as an editor, or just a viewer.</div>
+          </div>
+        </div>
+
+        <div style="background:#FFFFFF;border-radius:16px;border:1px solid rgba(32,30,29,0.09);box-shadow:0 2px 6px rgba(45,43,43,0.09),0 8px 20px rgba(45,43,43,0.09);padding:28px 16px;margin-top:12px;">
+          <div style="font:400 11px/1.3 Archivo,sans-serif;letter-spacing:1.1px;color:#024C7D;text-transform:uppercase;">Expense book</div>
+          <div style="margin-top:8px;font:800 26px/1.12 Archivo,sans-serif;letter-spacing:-0.39px;color:#201E1D;">Create your account</div>
+          <div style="margin-top:6px;font:400 14px/1.55 Archivo,sans-serif;color:rgba(32,30,29,0.6);">Your projects are yours. Start a build, log what it costs, and share it with whoever you choose.</div>
+
+          <div style="margin-top:16px;">
+            <label style="display:block;font:400 12px/1.4 Archivo,sans-serif;color:rgba(32,30,29,0.7);margin-bottom:6px;">Full name</label>
+            <input type="text" placeholder="Bilal Ahmed" style="width:100%;background:#FFFFFF;border:1px solid rgba(32,30,29,0.15);border-radius:10px;padding:12px;font:400 14px/1.3 Archivo,sans-serif;color:#201E1D;outline:none;" style-focus="border-color:#024C7D;border-width:1.6px;">
+          </div>
+
+          <div style="margin-top:16px;">
+            <label style="display:block;font:400 12px/1.4 Archivo,sans-serif;color:rgba(32,30,29,0.7);margin-bottom:6px;">Email</label>
+            <input type="email" placeholder="you@example.com" style="width:100%;background:#FFFFFF;border:1px solid rgba(32,30,29,0.15);border-radius:10px;padding:12px;font:400 14px/1.3 Archivo,sans-serif;color:#201E1D;outline:none;" style-focus="border-color:#024C7D;border-width:1.6px;">
+          </div>
+
+          <div style="margin-top:16px;">
+            <label style="display:block;font:400 12px/1.4 Archivo,sans-serif;color:rgba(32,30,29,0.7);margin-bottom:6px;">Password</label>
+            <div style="position:relative;">
+              <input type="{{ joinType }}" placeholder="At least 8 characters" style="width:100%;background:#FFFFFF;border:1px solid rgba(32,30,29,0.15);border-radius:10px;padding:12px 44px 12px 12px;font:400 14px/1.3 Archivo,sans-serif;color:#201E1D;outline:none;" style-focus="border-color:#024C7D;border-width:1.6px;">
+              <button onClick="{{ toggleJoin }}" aria-label="Toggle password visibility" style="all:unset;position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;display:flex;">
+                <sc-if value="{{ joinObscure }}" hint-placeholder-val="{{ true }}">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7D7979" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                </sc-if>
+                <sc-if value="{{ joinObscureOff }}" hint-placeholder-val="{{ false }}">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7D7979" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"></path><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"></path><path d="M6.61 6.61A13.53 13.53 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"></path><line x1="2" y1="2" x2="22" y2="22"></line></svg>
+                </sc-if>
+              </button>
+            </div>
+          </div>
+
+          <div style="margin-top:16px;">
+            <label style="display:block;font:400 12px/1.4 Archivo,sans-serif;color:rgba(32,30,29,0.7);margin-bottom:6px;">Confirm password</label>
+            <input type="{{ joinType }}" placeholder="Type it again" style="width:100%;background:#FFFFFF;border:1px solid rgba(32,30,29,0.15);border-radius:10px;padding:12px;font:400 14px/1.3 Archivo,sans-serif;color:#201E1D;outline:none;" style-focus="border-color:#024C7D;border-width:1.6px;">
+          </div>
+
+          <button style="all:unset;box-sizing:border-box;display:flex;align-items:center;justify-content:flex-start;width:100%;background:#024C7D;color:#F3F2F2;border-radius:10px;padding:11px 15px;font:800 14px/1.2 Archivo,sans-serif;cursor:pointer;box-shadow:0 2px 8px rgba(2,76,125,0.22);margin-top:24px;" style-hover="background:#003356;">Join</button>
+
+          <div style="height:1px;background:rgba(32,30,29,0.09);margin-top:24px;"></div>
+
+          <div style="display:flex;align-items:center;justify-content:center;gap:6px;margin-top:16px;">
+            <span style="font:400 13px Archivo,sans-serif;color:rgba(32,30,29,0.6);">Already have an account?</span>
+            <button onClick="{{ goLogin }}" style="all:unset;box-sizing:border-box;cursor:pointer;color:#024C7D;padding:6px 8px;font:800 13px/1.2 Archivo,sans-serif;border-radius:8px;" style-hover="background:#EEF6FD;">Log in</button>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isLogin }}" hint-placeholder-val="{{ false }}">
+      <div style="animation:fadeIn .3s ease;height:100%;width:100%;overflow-y:auto;padding:12px;">
+        <div style="position:relative;border-radius:16px;box-shadow:0 8px 24px rgba(45,43,43,0.141),0 24px 56px rgba(45,43,43,0.161);padding:28px 24px;background-image:linear-gradient(165deg, rgba(2,76,125,0.5) 0%, rgba(1,37,64,0.82) 50%, rgba(3,20,34,0.93) 100%), url('assets/site-supervisor.png');background-size:cover,cover;background-position:center,60% 12%;background-repeat:no-repeat,no-repeat;">
+          <button onClick="{{ goGate }}" aria-label="Back" style="all:unset;position:absolute;top:16px;left:16px;width:32px;height:32px;border-radius:999px;background:rgba(255,255,255,0.16);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.3);display:flex;align-items:center;justify-content:center;cursor:pointer;" style-hover="background:rgba(255,255,255,0.28);">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F3F2F2" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg>
+          </button>
+          <div style="display:flex;align-items:center;gap:10px;margin-top:24px;">
+            <div style="width:16px;height:16px;border-radius:6px;background:#F3F2F2;flex:none;"></div>
+            <div style="font:800 18px/1 Archivo,sans-serif;letter-spacing:-0.36px;color:#F3F2F2;text-transform:uppercase;">Bunyad</div>
+          </div>
+          <div style="margin-top:20px;font:800 26px/1.14 Archivo,sans-serif;letter-spacing:-0.4px;color:#F3F2F2;">Every rupee your building costs, in one book.</div>
+          <div style="margin-top:10px;font:400 14px/1.5 Archivo,sans-serif;color:rgba(243,242,242,0.9);">From the plot walk to the punch list — log the bricks, the cement, the mistri and the maps, stage by stage, bill in hand.</div>
+          <div style="margin-top:20px;">
+            <div style="padding-top:10px;margin-bottom:10px;border-top:1px solid rgba(255,255,255,0.32);font:400 13px/1.5 Archivo,sans-serif;color:rgba(243,242,242,0.9);">Stages you name yourself — plot, foundations, every floor up.</div>
+            <div style="padding-top:10px;margin-bottom:10px;border-top:1px solid rgba(255,255,255,0.32);font:400 13px/1.5 Archivo,sans-serif;color:rgba(243,242,242,0.9);">Every expense stamped with who logged it, right from site.</div>
+            <div style="padding-top:10px;margin-bottom:0;border-top:1px solid rgba(255,255,255,0.32);font:400 13px/1.5 Archivo,sans-serif;color:rgba(243,242,242,0.9);">Share the project as an editor, or just a viewer.</div>
+          </div>
+        </div>
+
+        <div style="background:#FFFFFF;border-radius:16px;border:1px solid rgba(32,30,29,0.09);box-shadow:0 2px 6px rgba(45,43,43,0.09),0 8px 20px rgba(45,43,43,0.09);padding:28px 16px;margin-top:12px;">
+          <div style="font:400 11px/1.3 Archivo,sans-serif;letter-spacing:1.1px;color:#024C7D;text-transform:uppercase;">Expense book</div>
+          <div style="margin-top:8px;font:800 26px/1.12 Archivo,sans-serif;letter-spacing:-0.39px;color:#201E1D;">Log in</div>
+          <div style="margin-top:6px;font:400 14px/1.55 Archivo,sans-serif;color:rgba(32,30,29,0.6);">Welcome back. Pick up where your build left off.</div>
+
+          <div style="margin-top:16px;">
+            <label style="display:block;font:400 12px/1.4 Archivo,sans-serif;color:rgba(32,30,29,0.7);margin-bottom:6px;">Email</label>
+            <input type="email" placeholder="you@example.com" style="width:100%;background:#FFFFFF;border:1px solid rgba(32,30,29,0.15);border-radius:10px;padding:12px;font:400 14px/1.3 Archivo,sans-serif;color:#201E1D;outline:none;" style-focus="border-color:#024C7D;border-width:1.6px;">
+          </div>
+
+          <div style="margin-top:16px;">
+            <label style="display:block;font:400 12px/1.4 Archivo,sans-serif;color:rgba(32,30,29,0.7);margin-bottom:6px;">Password</label>
+            <div style="position:relative;">
+              <input type="{{ loginType }}" placeholder="••••••••" style="width:100%;background:#FFFFFF;border:1px solid rgba(32,30,29,0.15);border-radius:10px;padding:12px 44px 12px 12px;font:400 14px/1.3 Archivo,sans-serif;color:#201E1D;outline:none;" style-focus="border-color:#024C7D;border-width:1.6px;">
+              <button onClick="{{ toggleLogin }}" aria-label="Toggle password visibility" style="all:unset;position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;display:flex;">
+                <sc-if value="{{ loginObscure }}" hint-placeholder-val="{{ true }}">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7D7979" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                </sc-if>
+                <sc-if value="{{ loginObscureOff }}" hint-placeholder-val="{{ false }}">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7D7979" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"></path><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"></path><path d="M6.61 6.61A13.53 13.53 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"></path><line x1="2" y1="2" x2="22" y2="22"></line></svg>
+                </sc-if>
+              </button>
+            </div>
+          </div>
+
+          <button style="all:unset;box-sizing:border-box;display:flex;align-items:center;justify-content:flex-start;width:100%;background:#024C7D;color:#F3F2F2;border-radius:10px;padding:11px 15px;font:800 14px/1.2 Archivo,sans-serif;cursor:pointer;box-shadow:0 2px 8px rgba(2,76,125,0.22);margin-top:16px;" style-hover="background:#003356;">Log in</button>
+
+          <div style="height:1px;background:rgba(32,30,29,0.09);margin-top:24px;"></div>
+
+          <div style="display:flex;align-items:center;justify-content:center;gap:6px;margin-top:16px;">
+            <span style="font:400 13px Archivo,sans-serif;color:rgba(32,30,29,0.6);">New to Bunyad?</span>
+            <button onClick="{{ goJoin }}" style="all:unset;box-sizing:border-box;cursor:pointer;color:#024C7D;padding:6px 8px;font:800 13px/1.2 Archivo,sans-serif;border-radius:8px;" style-hover="background:#EEF6FD;">Join</button>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+  </div>
+
+  <div style="margin-top:20px;font:400 12px Archivo,sans-serif;color:rgba(32,30,29,0.5);text-align:center;">Click Join / Log in to move between screens — it's a working prototype.</div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { screen: 'gate', joinObscure: true, loginObscure: true };
+
+  renderVals() {
+    const s = this.state;
+    return {
+      isGate: s.screen === 'gate',
+      isJoin: s.screen === 'join',
+      isLogin: s.screen === 'login',
+      goGate: () => this.setState({ screen: 'gate' }),
+      goJoin: () => this.setState({ screen: 'join' }),
+      goLogin: () => this.setState({ screen: 'login' }),
+
+      joinType: s.joinObscure ? 'password' : 'text',
+      joinObscure: s.joinObscure,
+      joinObscureOff: !s.joinObscure,
+      toggleJoin: () => this.setState(s => ({ joinObscure: !s.joinObscure })),
+
+      loginType: s.loginObscure ? 'password' : 'text',
+      loginObscure: s.loginObscure,
+      loginObscureOff: !s.loginObscure,
+      toggleLogin: () => this.setState(s => ({ loginObscure: !s.loginObscure })),
+    };
+  }
+}
+</script>
+</body>
+</html>

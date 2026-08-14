@@ -52,6 +52,7 @@ class Btn extends StatelessWidget {
     this.busyLabel = 'Saving…',
     this.block = false,
     this.compact = false,
+    this.padding,
   });
 
   final String label;
@@ -64,6 +65,10 @@ class Btn extends StatelessWidget {
   /// `.btn-block` — full width, and the label sits left, as on the login form.
   final bool block;
   final bool compact;
+
+  /// Overrides the box the [kind] and [compact] would otherwise give it, for
+  /// the odd button that has to match something taller.
+  final EdgeInsetsGeometry? padding;
 
   @override
   Widget build(BuildContext context) {
@@ -124,10 +129,11 @@ class Btn extends StatelessWidget {
             splashColor: (kind == BtnKind.primary ? T.bg : T.accent).withValues(alpha: 0.12),
             highlightColor: (kind == BtnKind.primary ? T.bg : T.accent).withValues(alpha: 0.06),
             child: Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: kind == BtnKind.ghost ? 8 : (compact ? 12 : 15),
-                vertical: compact ? 8 : 11,
-              ),
+              padding: padding ??
+                  EdgeInsets.symmetric(
+                    horizontal: kind == BtnKind.ghost ? 8 : (compact ? 12 : 15),
+                    vertical: compact ? 8 : 11,
+                  ),
               child: content,
             ),
           ),

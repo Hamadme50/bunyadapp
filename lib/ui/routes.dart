@@ -7,6 +7,7 @@ import 'screens/account_screen.dart';
 import 'screens/admin_screen.dart';
 import 'screens/boot_screen.dart';
 import 'screens/dashboard_screen.dart';
+import 'screens/gate_screen.dart';
 import 'screens/join_screen.dart';
 import 'screens/login_screen.dart';
 import 'screens/password_screen.dart';
@@ -18,6 +19,7 @@ class Routes {
   const Routes._();
 
   static const String boot = '/boot';
+  static const String gate = '/gate';
   static const String join = '/join';
   static const String login = '/login';
   static const String password = '/password';
@@ -32,6 +34,7 @@ class Routes {
 
 /// Short names for the navigation the screens actually do.
 extension BunyadNavigation on BuildContext {
+  void goGate() => go(Routes.gate);
   void goJoin() => go(Routes.join);
   void goLogin() => go(Routes.login);
   void goDashboard() => go(Routes.dashboard);
@@ -63,7 +66,8 @@ final routerProvider = Provider<GoRouter>((ref) {
       final status = ref.read(sessionProvider).status;
       final at = state.matchedLocation;
 
-      final atGate = at == Routes.boot ||
+      final atSignedOutScreen = at == Routes.boot ||
+          at == Routes.gate ||
           at == Routes.join ||
           at == Routes.login ||
           at == Routes.password;
@@ -71,18 +75,19 @@ final routerProvider = Provider<GoRouter>((ref) {
       return switch (status) {
         SessionStatus.checking => at == Routes.boot ? null : Routes.boot,
         SessionStatus.unreachable => at == Routes.boot ? null : Routes.boot,
-        // Joining is the way in by default; signing in is one tap from there,
-        // so both addresses are allowed to stand.
+        // The gate is the way in by default; joining and signing in are each
+        // one tap from there, so all three addresses are allowed to stand.
         SessionStatus.signedOut =>
-          (at == Routes.join || at == Routes.login) ? null : Routes.join,
+          (at == Routes.gate || at == Routes.join || at == Routes.login) ? null : Routes.gate,
         // An issued password has to be replaced before anything else opens.
         SessionStatus.mustChangePassword => at == Routes.password ? null : Routes.password,
-        SessionStatus.signedIn => atGate ? Routes.dashboard : null,
+        SessionStatus.signedIn => atSignedOutScreen ? Routes.dashboard : null,
       };
     },
 
     routes: [
       GoRoute(path: Routes.boot, builder: (context, state) => const BootScreen()),
+      GoRoute(path: Routes.gate, builder: (context, state) => const GateScreen()),
       GoRoute(path: Routes.join, builder: (context, state) => const JoinScreen()),
       GoRoute(path: Routes.login, builder: (context, state) => const LoginScreen()),
       GoRoute(path: Routes.password, builder: (context, state) => const PasswordScreen()),

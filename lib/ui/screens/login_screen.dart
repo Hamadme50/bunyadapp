@@ -65,16 +65,19 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         child: ListView(
           padding: const EdgeInsets.all(T.s3),
           children: [
-            const LoginPoster(
-              title: 'Every rupee your building costs, in one book.',
-              body: 'Plot to plaster. Log the bricks, the cement, the mistri and the maps — '
-                  'stage by stage, with the bill attached.',
-              points: [
-                'Stages you name yourself — plot, foundations, each floor.',
-                'Every expense stamped with who logged it.',
-                'Share a project as an editor or a viewer.',
-              ],
+            // The gate has already made the pitch — this screen only has to
+            // take the details, and offer the way back.
+            Align(
+              alignment: Alignment.centerLeft,
+              child: IconBtn(
+                icon: Icons.arrow_back_rounded,
+                tooltip: 'Back',
+                onPressed: () => context.goGate(),
+              ),
             ),
+            const SizedBox(height: T.s3),
+
+            const _LoginBanner(),
             const SizedBox(height: T.s3),
 
             Container(
@@ -91,7 +94,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   children: [
                     const Eyebrow(kAppTagline, accent: true),
                     const SizedBox(height: T.s2),
-                    Text('Sign in', style: T.h2),
+                    Text('Log in', style: T.h2),
                     const SizedBox(height: 6),
                     Text(
                       'Welcome back. Pick up where your build left off.',
@@ -144,7 +147,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
                     const SizedBox(height: T.s4),
                     Btn(
-                      label: 'Sign in',
+                      label: 'Log in',
                       block: true,
                       busy: _busy,
                       busyLabel: 'Signing in…',
@@ -164,7 +167,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         ),
                         const SizedBox(width: 4),
                         Btn(
-                          label: 'Create an account',
+                          label: 'Join',
                           kind: BtnKind.ghost,
                           onPressed: _busy ? null : () => context.goJoin(),
                         ),
@@ -190,7 +193,54 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 }
 
-/// `.login-poster` — the accent panel that carries the app's promise.
+/// The site photo heading the login page, under the brand's gradient wash.
+///
+/// Carries no words of its own — the gate said it all — so the wash is lighter
+/// than [LoginPoster]'s: this one only has to tint the photo to the brand, not
+/// darken it enough to read white type off.
+class _LoginBanner extends StatelessWidget {
+  const _LoginBanner();
+
+  @override
+  Widget build(BuildContext context) => Container(
+        // Matches the form card below rather than floating over it — the two
+        // read as one stack.
+        decoration: BoxDecoration(borderRadius: T.brLg, boxShadow: T.shadowMd),
+        child: ClipRRect(
+          borderRadius: T.brLg,
+          child: AspectRatio(
+            // The source is 3:2; cropping to a wider band keeps it a header
+            // rather than a half-screen poster.
+            aspectRatio: 16 / 9,
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                Image.asset('assets/images/login.jpg', fit: BoxFit.cover),
+                DecoratedBox(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        T.accent.withValues(alpha: 0.42),
+                        T.accent800.withValues(alpha: 0.62),
+                        T.accent900.withValues(alpha: 0.78),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+}
+
+/// `.login-poster` — the panel that carries the app's promise, the same site
+/// photo as the gate behind it.
+///
+/// Only the password screen still raises one: join and login sit behind the
+/// gate, which has already said all this.
 class LoginPoster extends StatelessWidget {
   const LoginPoster({
     super.key,
@@ -205,61 +255,85 @@ class LoginPoster extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-        padding: const EdgeInsets.symmetric(horizontal: T.s6, vertical: T.s8),
-        decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [T.accent, T.accent800],
-          ),
+        decoration: BoxDecoration(borderRadius: T.brLg, boxShadow: T.shadowLg),
+        child: ClipRRect(
           borderRadius: T.brLg,
-          boxShadow: T.shadowLg,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const BrandMark(color: T.bg, shadow: false),
-                const SizedBox(width: 10),
-                Text(
-                  kAppName.toUpperCase(),
-                  style: TextStyle(
-                    fontFamily: T.fontFamily,
-                    fontWeight: FontWeight.w800,
-                    fontSize: 18,
-                    letterSpacing: -0.02 * 18,
-                    color: T.bg,
+          child: Stack(
+            children: [
+              Positioned.fill(
+                child: Image.asset(
+                  'assets/images/site-supervisor.png',
+                  fit: BoxFit.cover,
+                  alignment: const Alignment(0.2, -0.76),
+                ),
+              ),
+              Positioned.fill(
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        T.accent.withValues(alpha: 0.5),
+                        T.accent800.withValues(alpha: 0.82),
+                        T.accent900.withValues(alpha: 0.93),
+                      ],
+                    ),
                   ),
                 ),
-              ],
-            ),
-            const SizedBox(height: T.s6),
-            Text(title, style: T.heading(30, color: T.bg)),
-            const SizedBox(height: T.s3),
-            Text(
-              body,
-              style: T.body.copyWith(fontSize: 15, color: T.bg.withValues(alpha: 0.94)),
-            ),
-            if (points.isNotEmpty) ...[
-              const SizedBox(height: T.s6),
-              for (final point in points)
-                Container(
-                  width: double.infinity,
-                  margin: const EdgeInsets.only(bottom: T.s3),
-                  padding: const EdgeInsets.only(top: T.s3),
-                  decoration: const BoxDecoration(
-                    border: Border(top: BorderSide(color: Color(0x59FFFFFF))),
-                  ),
-                  child: Text(
-                    point,
-                    style: T.body.copyWith(fontSize: 14, color: T.bg.withValues(alpha: 0.94)),
-                  ),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(T.s6, 28, T.s6, T.s8),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const BrandMark(color: T.bg, shadow: false),
+                        const SizedBox(width: 10),
+                        Text(
+                          kAppName.toUpperCase(),
+                          style: TextStyle(
+                            fontFamily: T.fontFamily,
+                            fontWeight: FontWeight.w800,
+                            fontSize: 18,
+                            letterSpacing: -0.02 * 18,
+                            color: T.bg,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: T.s4),
+                    Text(title, style: T.heading(26, color: T.bg)),
+                    const SizedBox(height: 10),
+                    Text(
+                      body,
+                      style: T.body.copyWith(fontSize: 14, color: T.bg.withValues(alpha: 0.9)),
+                    ),
+                    if (points.isNotEmpty) ...[
+                      const SizedBox(height: T.s4),
+                      for (final point in points)
+                        Container(
+                          width: double.infinity,
+                          margin: const EdgeInsets.only(bottom: 10),
+                          padding: const EdgeInsets.only(top: 10),
+                          decoration: const BoxDecoration(
+                            border: Border(top: BorderSide(color: Color(0x52FFFFFF))),
+                          ),
+                          child: Text(
+                            point,
+                            style:
+                                T.body.copyWith(fontSize: 13, color: T.bg.withValues(alpha: 0.9)),
+                          ),
+                        ),
+                    ],
+                  ],
                 ),
+              ),
             ],
-          ],
+          ),
         ),
       );
 }

@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;800&display=swap">
+  <style>
+    *{box-sizing:border-box;}
+    body{margin:0;}
+    input::placeholder{color:rgba(32,30,29,0.38);font-family:'Archivo',sans-serif;}
+    ::selection{background:rgba(2,76,125,0.25);}
+  </style>
+</helmet>
+<div style="min-height:100vh;background:#D7D3D3;padding:56px 24px 96px;font-family:'Archivo',sans-serif;">
+  <div style="max-width:900px;margin:0 auto 40px;">
+    <div style="font:800 22px/1.2 Archivo,sans-serif;color:#201E1D;letter-spacing:-0.02em;">Bunyad — current Join &amp; Sign in</div>
+    <div style="margin-top:6px;font:400 14px/1.5 Archivo,sans-serif;color:rgba(32,30,29,0.6);">Recreated from lib/ui/screens/join_screen.dart and login_screen.dart, pixel-for-pixel.</div>
+  </div>
+
+  <div style="display:flex;gap:40px;flex-wrap:wrap;justify-content:center;align-items:flex-start;">
+
+    <div>
+      <div style="text-align:center;margin-bottom:16px;font:800 11px Archivo,sans-serif;letter-spacing:0.08em;color:rgba(32,30,29,0.55);text-transform:uppercase;">Join — /join</div>
+      <div style="width:390px;background:#F3F2F2;border-radius:28px;overflow:hidden;box-shadow:0 24px 56px rgba(0,0,0,0.22);padding:12px;">
+
+        <div style="background:linear-gradient(135deg,#024C7D,#012540);border-radius:16px;box-shadow:0 8px 24px rgba(45,43,43,0.141),0 24px 56px rgba(45,43,43,0.161);padding:32px 24px;">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="width:16px;height:16px;border-radius:6px;background:#F3F2F2;flex:none;"></div>
+            <div style="font:800 18px/1 Archivo,sans-serif;letter-spacing:-0.36px;color:#F3F2F2;text-transform:uppercase;">Bunyad</div>
+          </div>
+          <div style="margin-top:24px;font:800 30px/1.12 Archivo,sans-serif;letter-spacing:-0.45px;color:#F3F2F2;">Every rupee your building costs, in one book.</div>
+          <div style="margin-top:12px;font:400 15px/1.55 Archivo,sans-serif;color:rgba(243,242,242,0.94);">Plot to plaster. Log the bricks, the cement, the mistri and the maps — stage by stage, with the bill attached.</div>
+          <div style="margin-top:24px;">
+            <div style="padding-top:12px;margin-bottom:12px;border-top:1px solid rgba(255,255,255,0.349);font:400 14px/1.55 Archivo,sans-serif;color:rgba(243,242,242,0.94);">Stages you name yourself — plot, foundations, each floor.</div>
+            <div style="padding-top:12px;margin-bottom:12px;border-top:1px solid rgba(255,255,255,0.349);font:400 14px/1.55 Archivo,sans-serif;color:rgba(243,242,242,0.94);">Every expense stamped with who logged it.</div>
+            <div style="padding-top:12px;margin-bottom:0;border-top:1px solid rgba(255,255,255,0.349);font:400 14px/1.55 Archivo,sans-serif;color:rgba(243,242,242,0.94);">Share a project as an editor or a viewer.</div>
+          </div>
+        </div>
+
+        <div style="background:#FFFFFF;border-radius:16px;border:1px solid rgba(32,30,29,0.09);box-shadow:0 2px 6px rgba(45,43,43,0.09),0 8px 20px rgba(45,43,43,0.09);padding:32px 16px;margin-top:12px;">
+          <div style="font:400 11px/1.3 Archivo,sans-serif;letter-spacing:1.1px;color:#024C7D;text-transform:uppercase;">Expense book</div>
+          <div style="margin-top:8px;font:800 26px/1.12 Archivo,sans-serif;letter-spacing:-0.39px;color:#201E1D;">Create your account</div>
+          <div style="margin-top:6px;font:400 14px/1.55 Archivo,sans-serif;color:rgba(32,30,29,0.6);">Your projects are yours. Start a build, log what it costs, and share it with whoever you choose.</div>
+
+          <div style="margin-top:16px;">
+            <label style="display:block;font:400 12px/1.4 Archivo,sans-serif;color:rgba(32,30,29,0.7);margin-bottom:6px;">Full name</label>
+            <input type="text" placeholder="Bilal Ahmed" style="width:100%;background:#FFFFFF;border:1px solid rgba(32,30,29,0.15);border-radius:10px;padding:12px;font:400 14px/1.3 Archivo,sans-serif;color:#201E1D;outline:none;" style-focus="border-color:#024C7D;border-width:1.6px;">
+          </div>
+
+          <div style="margin-top:16px;">
+            <label style="display:block;font:400 12px/1.4 Archivo,sans-serif;color:rgba(32,30,29,0.7);margin-bottom:6px;">Email</label>
+            <input type="email" placeholder="you@example.com" style="width:100%;background:#FFFFFF;border:1px solid rgba(32,30,29,0.15);border-radius:10px;padding:12px;font:400 14px/1.3 Archivo,sans-serif;color:#201E1D;outline:none;" style-focus="border-color:#024C7D;border-width:1.6px;">
+          </div>
+
+          <div style="margin-top:16px;">
+            <label style="display:block;font:400 12px/1.4 Archivo,sans-serif;color:rgba(32,30,29,0.7);margin-bottom:6px;">Password</label>
+            <div style="position:relative;">
+              <input type="{{ joinType }}" placeholder="At least 8 characters" style="width:100%;background:#FFFFFF;border:1px solid rgba(32,30,29,0.15);border-radius:10px;padding:12px 44px 12px 12px;font:400 14px/1.3 Archivo,sans-serif;color:#201E1D;outline:none;" style-focus="border-color:#024C7D;border-width:1.6px;">
+              <button onClick="{{ toggleJoin }}" aria-label="Toggle password visibility" style="all:unset;position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;display:flex;">
+                <sc-if value="{{ joinObscure }}" hint-placeholder-val="{{ true }}">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7D7979" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                </sc-if>
+                <sc-if value="{{ joinObscureOff }}" hint-placeholder-val="{{ false }}">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7D7979" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"></path><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"></path><path d="M6.61 6.61A13.53 13.53 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"></path><line x1="2" y1="2" x2="22" y2="22"></line></svg>
+                </sc-if>
+              </button>
+            </div>
+          </div>
+
+          <div style="margin-top:16px;">
+            <label style="display:block;font:400 12px/1.4 Archivo,sans-serif;color:rgba(32,30,29,0.7);margin-bottom:6px;">Confirm password</label>
+            <input type="{{ joinType }}" placeholder="Type it again" style="width:100%;background:#FFFFFF;border:1px solid rgba(32,30,29,0.15);border-radius:10px;padding:12px;font:400 14px/1.3 Archivo,sans-serif;color:#201E1D;outline:none;" style-focus="border-color:#024C7D;border-width:1.6px;">
+          </div>
+
+          <button style="all:unset;box-sizing:border-box;display:flex;align-items:center;justify-content:flex-start;width:100%;background:#024C7D;color:#F3F2F2;border-radius:10px;padding:11px 15px;font:800 14px/1.2 Archivo,sans-serif;cursor:pointer;box-shadow:0 2px 8px rgba(2,76,125,0.22);margin-top:24px;">Create account</button>
+
+          <div style="height:1px;background:rgba(32,30,29,0.09);margin-top:24px;"></div>
+
+          <div style="display:flex;align-items:center;justify-content:center;gap:4px;margin-top:16px;">
+            <span style="font:400 13px Archivo,sans-serif;color:rgba(32,30,29,0.6);">Already have an account?</span>
+            <button style="all:unset;box-sizing:border-box;cursor:pointer;color:#024C7D;padding:11px 8px;font:800 14px/1.2 Archivo,sans-serif;border-radius:10px;">Sign in</button>
+          </div>
+
+          <div style="margin-top:12px;text-align:center;font:400 11px Archivo,sans-serif;color:rgba(32,30,29,0.4);">https://bunyad.inverterzone.net</div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div style="text-align:center;margin-bottom:16px;font:800 11px Archivo,sans-serif;letter-spacing:0.08em;color:rgba(32,30,29,0.55);text-transform:uppercase;">Sign in — /login</div>
+      <div style="width:390px;background:#F3F2F2;border-radius:28px;overflow:hidden;box-shadow:0 24px 56px rgba(0,0,0,0.22);padding:12px;">
+
+        <div style="background:linear-gradient(135deg,#024C7D,#012540);border-radius:16px;box-shadow:0 8px 24px rgba(45,43,43,0.141),0 24px 56px rgba(45,43,43,0.161);padding:32px 24px;">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="width:16px;height:16px;border-radius:6px;background:#F3F2F2;flex:none;"></div>
+            <div style="font:800 18px/1 Archivo,sans-serif;letter-spacing:-0.36px;color:#F3F2F2;text-transform:uppercase;">Bunyad</div>
+          </div>
+          <div style="margin-top:24px;font:800 30px/1.12 Archivo,sans-serif;letter-spacing:-0.45px;color:#F3F2F2;">Every rupee your building costs, in one book.</div>
+          <div style="margin-top:12px;font:400 15px/1.55 Archivo,sans-serif;color:rgba(243,242,242,0.94);">Plot to plaster. Log the bricks, the cement, the mistri and the maps — stage by stage, with the bill attached.</div>
+          <div style="margin-top:24px;">
+            <div style="padding-top:12px;margin-bottom:12px;border-top:1px solid rgba(255,255,255,0.349);font:400 14px/1.55 Archivo,sans-serif;color:rgba(243,242,242,0.94);">Stages you name yourself — plot, foundations, each floor.</div>
+            <div style="padding-top:12px;margin-bottom:12px;border-top:1px solid rgba(255,255,255,0.349);font:400 14px/1.55 Archivo,sans-serif;color:rgba(243,242,242,0.94);">Every expense stamped with who logged it.</div>
+            <div style="padding-top:12px;margin-bottom:0;border-top:1px solid rgba(255,255,255,0.349);font:400 14px/1.55 Archivo,sans-serif;color:rgba(243,242,242,0.94);">Share a project as an editor or a viewer.</div>
+          </div>
+        </div>
+
+        <div style="background:#FFFFFF;border-radius:16px;border:1px solid rgba(32,30,29,0.09);box-shadow:0 2px 6px rgba(45,43,43,0.09),0 8px 20px rgba(45,43,43,0.09);padding:32px 16px;margin-top:12px;">
+          <div style="font:400 11px/1.3 Archivo,sans-serif;letter-spacing:1.1px;color:#024C7D;text-transform:uppercase;">Expense book</div>
+          <div style="margin-top:8px;font:800 26px/1.12 Archivo,sans-serif;letter-spacing:-0.39px;color:#201E1D;">Sign in</div>
+          <div style="margin-top:6px;font:400 14px/1.55 Archivo,sans-serif;color:rgba(32,30,29,0.6);">Welcome back. Pick up where your build left off.</div>
+
+          <div style="margin-top:16px;">
+            <label style="display:block;font:400 12px/1.4 Archivo,sans-serif;color:rgba(32,30,29,0.7);margin-bottom:6px;">Email</label>
+            <input type="email" placeholder="you@example.com" style="width:100%;background:#FFFFFF;border:1px solid rgba(32,30,29,0.15);border-radius:10px;padding:12px;font:400 14px/1.3 Archivo,sans-serif;color:#201E1D;outline:none;" style-focus="border-color:#024C7D;border-width:1.6px;">
+          </div>
+
+          <div style="margin-top:16px;">
+            <label style="display:block;font:400 12px/1.4 Archivo,sans-serif;color:rgba(32,30,29,0.7);margin-bottom:6px;">Password</label>
+            <div style="position:relative;">
+              <input type="{{ loginType }}" placeholder="••••••••" style="width:100%;background:#FFFFFF;border:1px solid rgba(32,30,29,0.15);border-radius:10px;padding:12px 44px 12px 12px;font:400 14px/1.3 Archivo,sans-serif;color:#201E1D;outline:none;" style-focus="border-color:#024C7D;border-width:1.6px;">
+              <button onClick="{{ toggleLogin }}" aria-label="Toggle password visibility" style="all:unset;position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;display:flex;">
+                <sc-if value="{{ loginObscure }}" hint-placeholder-val="{{ true }}">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7D7979" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                </sc-if>
+                <sc-if value="{{ loginObscureOff }}" hint-placeholder-val="{{ false }}">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7D7979" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"></path><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"></path><path d="M6.61 6.61A13.53 13.53 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"></path><line x1="2" y1="2" x2="22" y2="22"></line></svg>
+                </sc-if>
+              </button>
+            </div>
+          </div>
+
+          <button style="all:unset;box-sizing:border-box;display:flex;align-items:center;justify-content:flex-start;width:100%;background:#024C7D;color:#F3F2F2;border-radius:10px;padding:11px 15px;font:800 14px/1.2 Archivo,sans-serif;cursor:pointer;box-shadow:0 2px 8px rgba(2,76,125,0.22);margin-top:16px;">Sign in</button>
+
+          <div style="height:1px;background:rgba(32,30,29,0.09);margin-top:24px;"></div>
+
+          <div style="display:flex;align-items:center;justify-content:center;gap:4px;margin-top:16px;">
+            <span style="font:400 13px Archivo,sans-serif;color:rgba(32,30,29,0.6);">New to Bunyad?</span>
+            <button style="all:unset;box-sizing:border-box;cursor:pointer;color:#024C7D;padding:11px 8px;font:800 14px/1.2 Archivo,sans-serif;border-radius:10px;">Create an account</button>
+          </div>
+
+          <div style="margin-top:12px;text-align:center;font:400 11px Archivo,sans-serif;color:rgba(32,30,29,0.4);">https://bunyad.inverterzone.net</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { joinObscure: true, loginObscure: true };
+
+  renderVals() {
+    const s = this.state;
+    return {
+      joinType: s.joinObscure ? 'password' : 'text',
+      joinObscure: s.joinObscure,
+      joinObscureOff: !s.joinObscure,
+      toggleJoin: () => this.setState(s => ({ joinObscure: !s.joinObscure })),
+      loginType: s.loginObscure ? 'password' : 'text',
+      loginObscure: s.loginObscure,
+      loginObscureOff: !s.loginObscure,
+      toggleLogin: () => this.setState(s => ({ loginObscure: !s.loginObscure })),
+    };
+  }
+}
+</script>
+</body>
+</html>

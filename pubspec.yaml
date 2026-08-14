@@ -101,6 +101,10 @@ flutter:
     # seamless.
     - icon.png
 
+    # The gate's backdrop, and the header photo on the login page.
+    - assets/images/site-supervisor.png
+    - assets/images/login.jpg
+
   fonts:
     # The Modernist system's one typeface. Bundled rather than fetched at run
     # time so the first paint is never the wrong font.

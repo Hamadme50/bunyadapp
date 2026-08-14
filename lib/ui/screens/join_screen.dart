@@ -10,7 +10,8 @@ import '../widgets/fields.dart';
 import '../widgets/primitives.dart';
 import 'login_screen.dart';
 
-/// The first screen the app opens on: create your own account.
+/// Create your own account — one tap from the gate, or the link at the
+/// bottom of the login screen.
 ///
 /// The server signs the new account in as it creates it, so there is no second
 /// step — the dashboard is next. Anyone who already has an account takes the
@@ -28,6 +29,7 @@ class _JoinScreenState extends ConsumerState<JoinScreen> {
   final _password = TextEditingController();
   final _confirm = TextEditingController();
 
+  final _nameFocus = FocusNode();
   final _emailFocus = FocusNode();
   final _passwordFocus = FocusNode();
   final _confirmFocus = FocusNode();
@@ -37,38 +39,87 @@ class _JoinScreenState extends ConsumerState<JoinScreen> {
   String? _error;
   Map<String, String> _fieldErrors = {};
 
+  /// Permissive on purpose — the server has the final say. This only has to
+  /// catch the obvious typo before a round trip.
+  static final _emailPattern = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
+
   @override
   void dispose() {
     _name.dispose();
     _email.dispose();
     _password.dispose();
     _confirm.dispose();
+    _nameFocus.dispose();
     _emailFocus.dispose();
     _passwordFocus.dispose();
     _confirmFocus.dispose();
     super.dispose();
   }
 
-  Future<void> _submit() async {
-    if (_busy) return;
+  /// The server's own rules for a new account, checked here first so a blank
+  /// box or a typo costs no round trip.
+  ///
+  /// Everything wrong is reported at once rather than one box at a time, and
+  /// the first box that needs attention takes the cursor.
+  bool _validate() {
+    final errors = <String, String>{};
+
+    if (_name.text.trim().isEmpty) {
+      errors['name'] = 'Enter your name';
+    }
+
+    final email = _email.text.trim();
+    if (email.isEmpty) {
+      errors['email'] = 'Enter your email';
+    } else if (!_emailPattern.hasMatch(email)) {
+      errors['email'] = 'That does not look like an email';
+    }
+
+    if (_password.text.isEmpty) {
+      errors['password'] = 'Choose a password';
+    } else if (_password.text.length < 8) {
+      // The server checks this too, but only as a whole-form message — under
+      // the box it belongs to is the more useful place for it.
+      errors['password'] = 'Passwords must be at least 8 characters.';
+    }
+
+    if (_confirm.text.isEmpty) {
+      errors['confirm'] = 'Type your password again';
+    } else if (_password.text != _confirm.text) {
+      // Caught here rather than at the server, which only ever sees one password.
+      errors['confirm'] = 'Those two do not match.';
+    }
 
     setState(() {
       _error = null;
-      _fieldErrors = {};
+      _fieldErrors = errors;
     });
 
-    // Caught here rather than at the server, which only ever sees one password.
-    if (_password.text != _confirm.text) {
-      setState(() => _fieldErrors = {'confirm': 'Those two do not match.'});
-      _confirmFocus.requestFocus();
-      return;
+    if (errors.isEmpty) return true;
+
+    for (final (field, focus) in [
+      ('name', _nameFocus),
+      ('email', _emailFocus),
+      ('password', _passwordFocus),
+      ('confirm', _confirmFocus),
+    ]) {
+      if (errors.containsKey(field)) {
+        focus.requestFocus();
+        break;
+      }
     }
+    return false;
+  }
+
+  Future<void> _submit() async {
+    if (_busy) return;
+    if (!_validate()) return;
 
     setState(() => _busy = true);
     try {
       await ref.read(sessionProvider.notifier).register(
-            name: _name.text,
-            email: _email.text,
+            name: _name.text.trim(),
+            email: _email.text.trim(),
             password: _password.text,
           );
       // Signed in already — the router's redirect takes it from here.
@@ -91,15 +142,15 @@ class _JoinScreenState extends ConsumerState<JoinScreen> {
         child: ListView(
           padding: const EdgeInsets.all(T.s3),
           children: [
-            const LoginPoster(
-              title: 'Every rupee your building costs, in one book.',
-              body: 'Plot to plaster. Log the bricks, the cement, the mistri and the maps — '
-                  'stage by stage, with the bill attached.',
-              points: [
-                'Stages you name yourself — plot, foundations, each floor.',
-                'Every expense stamped with who logged it.',
-                'Share a project as an editor or a viewer.',
-              ],
+            // The gate has already made the pitch — this screen only has to
+            // take the details, and offer the way back.
+            Align(
+              alignment: Alignment.centerLeft,
+              child: IconBtn(
+                icon: Icons.arrow_back_rounded,
+                tooltip: 'Back',
+                onPressed: () => context.goGate(),
+              ),
             ),
             const SizedBox(height: T.s3),
 
@@ -136,6 +187,7 @@ class _JoinScreenState extends ConsumerState<JoinScreen> {
                       error: _fieldErrors['name'],
                       child: BunyadInput(
                         controller: _name,
+                        focusNode: _nameFocus,
                         hintText: 'Bilal Ahmed',
                         maxLength: 120,
                         textCapitalization: TextCapitalization.words,
@@ -205,10 +257,11 @@ class _JoinScreenState extends ConsumerState<JoinScreen> {
 
                     const SizedBox(height: T.s6),
                     Btn(
-                      label: 'Create account',
+                      label: 'Create Account',
                       block: true,
                       busy: _busy,
                       busyLabel: 'Creating…',
+                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
                       onPressed: _submit,
                     ),
 
@@ -224,20 +277,15 @@ class _JoinScreenState extends ConsumerState<JoinScreen> {
                           style: T.body.copyWith(fontSize: 13, color: T.ink(0.6)),
                         ),
                         const SizedBox(width: 4),
+                        // Not block: a full-width button inside a Row gets
+                        // unbounded width and lays out to infinity.
                         Btn(
-                          label: 'Sign in',
-                          kind: BtnKind.ghost,
+                          label: 'Log in',
                           onPressed: _busy ? null : () => context.goLogin(),
                         ),
                       ],
                     ),
 
-                    const SizedBox(height: T.s3),
-                    Text(
-                      kServerUrl,
-                      textAlign: TextAlign.center,
-                      style: T.body.copyWith(fontSize: 11, color: T.ink(0.4)),
-                    ),
                   ],
                 ),
               ),
