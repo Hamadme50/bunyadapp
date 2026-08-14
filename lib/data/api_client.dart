@@ -198,7 +198,7 @@ class ApiClient {
     }
 
     final status = response.statusCode ?? 0;
-    if (status == 401) {
+    if (status == 401 && _isApiResponse(response)) {
       _unauthorized.add(null);
     }
     if (status < 200 || status >= 300) {
@@ -207,11 +207,24 @@ class ApiClient {
     return response.data ?? const [];
   }
 
+  /// Whether a response actually came from Bunyad rather than something in the
+  /// way of it.
+  ///
+  /// A captive portal, a proxy mid-deploy or a load balancer with no healthy
+  /// backend will happily answer 401 with an HTML page. The API only ever
+  /// answers in JSON, so anything else is not the server saying "your token is
+  /// finished" — and a token good for two years must not be thrown away on the
+  /// word of a hotel wifi login screen.
+  static bool _isApiResponse(Response<dynamic> response) {
+    final type = response.headers.value(Headers.contentTypeHeader);
+    return type != null && type.toLowerCase().contains('json');
+  }
+
   /// Turns the response into data, or into the failure it describes.
   dynamic _unwrap(Response<dynamic> response) {
     final status = response.statusCode ?? 0;
 
-    if (status == 401) {
+    if (status == 401 && _isApiResponse(response)) {
       _unauthorized.add(null);
     }
     if (status >= 200 && status < 300) {

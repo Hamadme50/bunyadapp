@@ -163,6 +163,13 @@
             </list>
           </value>
         </entry>
+        <entry key="file_picker">
+          <value>
+            <list>
+              <option value="$PROJECT_DIR$/../../../pub-cache/hosted/pub.dev/file_picker-8.3.7/lib" />
+            </list>
+          </value>
+        </entry>
         <entry key="file_selector_linux">
           <value>
             <list>
@@ -293,6 +300,13 @@
           <value>
             <list>
               <option value="C:/flutter/packages/flutter_test/lib" />
+            </list>
+          </value>
+        </entry>
+        <entry key="flutter_upgrade_version">
+          <value>
+            <list>
+              <option value="$PROJECT_DIR$/../../../pub-cache/hosted/pub.dev/flutter_upgrade_version-1.1.9/lib" />
             </list>
           </value>
         </entry>
@@ -517,6 +531,13 @@
           <value>
             <list>
               <option value="$PROJECT_DIR$/../../../pub-cache/hosted/pub.dev/octo_image-2.1.0/lib" />
+            </list>
+          </value>
+        </entry>
+        <entry key="open_filex">
+          <value>
+            <list>
+              <option value="$PROJECT_DIR$/../../../pub-cache/hosted/pub.dev/open_filex-4.7.0/lib" />
             </list>
           </value>
         </entry>
@@ -886,6 +907,7 @@
       <root url="file://$PROJECT_DIR$/../../../pub-cache/hosted/pub.dev/fake_async-1.3.3/lib" />
       <root url="file://$PROJECT_DIR$/../../../pub-cache/hosted/pub.dev/ffi-2.2.0/lib" />
       <root url="file://$PROJECT_DIR$/../../../pub-cache/hosted/pub.dev/file-7.0.1/lib" />
+      <root url="file://$PROJECT_DIR$/../../../pub-cache/hosted/pub.dev/file_picker-8.3.7/lib" />
       <root url="file://$PROJECT_DIR$/../../../pub-cache/hosted/pub.dev/file_selector_linux-0.9.4/lib" />
       <root url="file://$PROJECT_DIR$/../../../pub-cache/hosted/pub.dev/file_selector_macos-0.9.5/lib" />
       <root url="file://$PROJECT_DIR$/../../../pub-cache/hosted/pub.dev/file_selector_platform_interface-2.7.0/lib" />
@@ -903,6 +925,7 @@
       <root url="file://$PROJECT_DIR$/../../../pub-cache/hosted/pub.dev/flutter_secure_storage_platform_interface-1.1.2/lib" />
       <root url="file://$PROJECT_DIR$/../../../pub-cache/hosted/pub.dev/flutter_secure_storage_web-1.2.1/lib" />
       <root url="file://$PROJECT_DIR$/../../../pub-cache/hosted/pub.dev/flutter_secure_storage_windows-3.1.2/lib" />
+      <root url="file://$PROJECT_DIR$/../../../pub-cache/hosted/pub.dev/flutter_upgrade_version-1.1.9/lib" />
       <root url="file://$PROJECT_DIR$/../../../pub-cache/hosted/pub.dev/go_router-14.8.1/lib" />
       <root url="file://$PROJECT_DIR$/../../../pub-cache/hosted/pub.dev/hooks-2.0.2/lib" />
       <root url="file://$PROJECT_DIR$/../../../pub-cache/hosted/pub.dev/html-0.15.6/lib" />
@@ -934,6 +957,7 @@
       <root url="file://$PROJECT_DIR$/../../../pub-cache/hosted/pub.dev/mime-2.0.0/lib" />
       <root url="file://$PROJECT_DIR$/../../../pub-cache/hosted/pub.dev/objective_c-9.5.0/lib" />
       <root url="file://$PROJECT_DIR$/../../../pub-cache/hosted/pub.dev/octo_image-2.1.0/lib" />
+      <root url="file://$PROJECT_DIR$/../../../pub-cache/hosted/pub.dev/open_filex-4.7.0/lib" />
       <root url="file://$PROJECT_DIR$/../../../pub-cache/hosted/pub.dev/package_config-2.2.0/lib" />
       <root url="file://$PROJECT_DIR$/../../../pub-cache/hosted/pub.dev/path-1.9.1/lib" />
       <root url="file://$PROJECT_DIR$/../../../pub-cache/hosted/pub.dev/path_provider-2.1.6/lib" />

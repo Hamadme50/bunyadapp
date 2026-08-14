@@ -52,16 +52,48 @@ class SessionState {
 /// reads it from here rather than passing it down.
 class SessionController extends StateNotifier<SessionState> {
   SessionController(this._ref) : super(const SessionState.checking()) {
-    // A 401 on any call anywhere means the token died — bounce to sign-in.
+    // A 401 on any call anywhere *may* mean the token died — confirm it before
+    // acting on it.
     _ref.read(apiClientProvider).onUnauthorized.listen((_) {
       if (state.status == SessionStatus.signedIn ||
           state.status == SessionStatus.mustChangePassword) {
-        signOutLocally();
+        _signOutIfReallyUnauthorized();
       }
     });
   }
 
   final Ref _ref;
+
+  /// Guards the confirming call below from its own 401 re-entering this.
+  bool _confirming = false;
+
+  /// Checks a 401 against the server before ending a session over it.
+  ///
+  /// A phone token is good for two years, so it is worth one extra call to be
+  /// sure before discarding it. A single 401 is not proof on its own: a server
+  /// restarting behind a proxy, a gateway with no healthy backend yet, or a
+  /// half-connected network can all produce one while the token is perfectly
+  /// good. Only a second, deliberate 401 from `/auth/me` ends the session.
+  ///
+  /// Anything else — the call succeeding, the network failing, a 5xx — leaves
+  /// the session exactly as it was. The cost of being wrong here is asymmetric:
+  /// a stale session self-corrects on the next real 401, while a wrongly
+  /// dropped one makes somebody log in again on a building site.
+  Future<void> _signOutIfReallyUnauthorized() async {
+    if (_confirming) return;
+    _confirming = true;
+    try {
+      _apply(await _repo.me());
+    } on ApiException catch (failure) {
+      if (failure.isUnauthorized) {
+        await signOutLocally();
+      }
+      // Offline, timeout, 5xx, a proxy answering for the server: keep the
+      // session. The token outlives all of these.
+    } finally {
+      _confirming = false;
+    }
+  }
 
   BunyadRepository get _repo => _ref.read(repositoryProvider);
 

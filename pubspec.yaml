@@ -35,6 +35,10 @@ dependencies:
   # Play requires both to be reachable from inside the app.
   url_launcher: ^6.3.1
 
+  # Google Play in-app update, run as the blocking IMMEDIATE flow. Same package
+  # InverterZone uses. Android only — it wraps com.google.android.play:app-update.
+  flutter_upgrade_version: ^1.1.6
+
   # Attaching a PDF bill. image_picker only ever offers images, so choosing a
   # document needs the system file picker.
   file_picker: ^8.1.7

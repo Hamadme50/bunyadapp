@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'core/app_update.dart';
 import 'core/theme.dart';
 import 'global.dart';
 import 'state/session.dart';
@@ -29,6 +30,9 @@ class _BunyadAppState extends ConsumerState<BunyadApp> with WidgetsBindingObserv
     // Find out straight away whether the stored token is still good. The boot
     // screen is what the user sees while this runs.
     Future.microtask(() => ref.read(sessionProvider.notifier).restore());
+    // Play's update flow opens a full-screen activity of its own, so it needs an
+    // Activity to attach to — hence after the first frame rather than here.
+    WidgetsBinding.instance.addPostFrameCallback((_) => AppUpdate.check());
   }
 
   @override
@@ -43,6 +47,9 @@ class _BunyadAppState extends ConsumerState<BunyadApp> with WidgetsBindingObserv
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
       ref.read(sessionProvider.notifier).revalidate();
+      // An immediate update that was interrupted — the phone rang, the screen
+      // locked — leaves the install half done. Coming back is where it finishes.
+      AppUpdate.resumeIfInterrupted();
     }
   }
 
