@@ -321,6 +321,11 @@ class FileView {
   final String? uploadedByName;
   final DateTime? uploadedAt;
 
+  /// A PDF bill has no preview to show — the server stores the document whole
+  /// and never renders a thumbnail — so the timeline draws a document tile
+  /// instead of trying to load an image that does not exist.
+  bool get isPdf => contentType == 'application/pdf';
+
   factory FileView.fromJson(Map<String, dynamic> json) => FileView(
         id: _str(json['id']),
         filename: _str(json['filename']),

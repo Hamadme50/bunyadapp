@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../core/formatting.dart';
@@ -89,7 +90,9 @@ class _ExpenseSheetState extends ConsumerState<_ExpenseSheet> {
   late String? _expenseDate = widget.expense?.expenseDate ?? todayIso();
 
   /// Ids of uploaded files, in the order they should show.
-  late final List<String> _fileIds = [...?widget.expense?.files.map((f) => f.id)];
+  // The whole view, not just the id: a tile has to know whether it is a photo
+  // to preview or a PDF to draw as a document.
+  late final List<FileView> _files = [...?widget.expense?.files];
 
   int _inFlightUploads = 0;
   bool _busy = false;
@@ -140,7 +143,45 @@ class _ExpenseSheetState extends ConsumerState<_ExpenseSheet> {
           filename: file.name,
           projectId: widget.projectId,
         );
-        if (mounted) setState(() => _fileIds.add(stored.id));
+        if (mounted) setState(() => _files.add(stored));
+      } on ApiException catch (failure) {
+        if (mounted) Toast.error(context, '${file.name}: ${failure.message}');
+      } finally {
+        if (mounted) setState(() => _inFlightUploads -= 1);
+      }
+    }
+  }
+
+  /// Attaching a PDF rather than a picture. [image_picker] only ever offers
+  /// images, so a document needs the system file picker.
+  Future<void> _pickDocument() async {
+    FilePickerResult? picked;
+    try {
+      picked = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: const ['pdf'],
+        allowMultiple: true,
+        withData: false,
+      );
+    } catch (failure) {
+      if (mounted) Toast.error(context, 'Could not open your files.');
+      return;
+    }
+    if (picked == null || picked.files.isEmpty) return;
+
+    final repo = ref.read(repositoryProvider);
+    for (final file in picked.files) {
+      final path = file.path;
+      if (path == null) continue;
+      if (!mounted) return;
+      setState(() => _inFlightUploads += 1);
+      try {
+        final stored = await repo.uploadPhoto(
+          filePath: path,
+          filename: file.name,
+          projectId: widget.projectId,
+        );
+        if (mounted) setState(() => _files.add(stored));
       } on ApiException catch (failure) {
         if (mounted) Toast.error(context, '${file.name}: ${failure.message}');
       } finally {
@@ -150,7 +191,7 @@ class _ExpenseSheetState extends ConsumerState<_ExpenseSheet> {
   }
 
   Future<void> _choosePhotoSource() async {
-    final source = await showModalBottomSheet<ImageSource>(
+    final choice = await showModalBottomSheet<_Attachment>(
       context: context,
       backgroundColor: T.bg,
       shape: RoundedRectangleBorder(
@@ -164,19 +205,38 @@ class _ExpenseSheetState extends ConsumerState<_ExpenseSheet> {
             ListTile(
               leading: const Icon(Icons.photo_camera_outlined, color: T.accent),
               title: Text('Take a photo', style: T.body.copyWith(fontSize: 15)),
-              onTap: () => Navigator.of(context).pop(ImageSource.camera),
+              onTap: () => Navigator.of(context).pop(_Attachment.camera),
             ),
             ListTile(
               leading: const Icon(Icons.photo_library_outlined, color: T.accent),
               title: Text('Choose from gallery', style: T.body.copyWith(fontSize: 15)),
-              onTap: () => Navigator.of(context).pop(ImageSource.gallery),
+              onTap: () => Navigator.of(context).pop(_Attachment.gallery),
+            ),
+            ListTile(
+              leading: const Icon(Icons.picture_as_pdf_outlined, color: T.accent),
+              title: Text('Choose a PDF', style: T.body.copyWith(fontSize: 15)),
+              subtitle: Text(
+                'An emailed invoice or a scanned bill',
+                style: T.body.copyWith(fontSize: 12, color: T.ink(0.55)),
+              ),
+              onTap: () => Navigator.of(context).pop(_Attachment.document),
             ),
             const SizedBox(height: T.s2),
           ],
         ),
       ),
     );
-    if (source != null) await _pickPhotos(source);
+
+    switch (choice) {
+      case _Attachment.camera:
+        await _pickPhotos(ImageSource.camera);
+      case _Attachment.gallery:
+        await _pickPhotos(ImageSource.gallery);
+      case _Attachment.document:
+        await _pickDocument();
+      case null:
+        break;
+    }
   }
 
   // ── saving ──────────────────────────────────────────────────────────────
@@ -226,7 +286,7 @@ class _ExpenseSheetState extends ConsumerState<_ExpenseSheet> {
       'amount': amount,
       'expenseDate': _expenseDate,
       'notes': _notes.text.trim().isEmpty ? null : _notes.text.trim(),
-      'fileIds': _fileIds,
+      'fileIds': [for (final file in _files) file.id],
     };
 
     setState(() => _busy = true);
@@ -485,7 +545,7 @@ class _ExpenseSheetState extends ConsumerState<_ExpenseSheet> {
   /// a button that offers the camera or the gallery.
   Widget _photos() {
     return Field(
-      label: 'Photos — bills, delivery slips, the pile on site',
+      label: 'Attachments — bills, delivery slips, the pile on site',
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         mainAxisSize: MainAxisSize.min,
@@ -503,11 +563,11 @@ class _ExpenseSheetState extends ConsumerState<_ExpenseSheet> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text('Take a photo or add from gallery', style: T.heading(14)),
+                        Text('Add a photo or a PDF', style: T.heading(14)),
                         const SizedBox(height: 2),
                         Text(
-                          'Bills, delivery slips, the pile on site. Add as many as you '
-                          'like — they all stay attached to this expense.',
+                          'Photograph the bill, pick one from your gallery, or attach an '
+                          'emailed PDF invoice. They all stay with this expense.',
                           style: T.body.copyWith(fontSize: 12, color: T.ink(0.6)),
                         ),
                       ],
@@ -517,13 +577,13 @@ class _ExpenseSheetState extends ConsumerState<_ExpenseSheet> {
               ),
             ),
           ),
-          if (_fileIds.isNotEmpty || _inFlightUploads > 0) ...[
+          if (_files.isNotEmpty || _inFlightUploads > 0) ...[
             const SizedBox(height: 10),
             Wrap(
               spacing: 10,
               runSpacing: 10,
               children: [
-                for (final id in _fileIds) _tile(id),
+                for (final file in _files) _tile(file),
                 for (var i = 0; i < _inFlightUploads; i++)
                   Container(
                     width: 96,
@@ -544,7 +604,7 @@ class _ExpenseSheetState extends ConsumerState<_ExpenseSheet> {
     );
   }
 
-  Widget _tile(String fileId) => SizedBox(
+  Widget _tile(FileView file) => SizedBox(
         width: 96,
         height: 96,
         child: Stack(
@@ -552,7 +612,11 @@ class _ExpenseSheetState extends ConsumerState<_ExpenseSheet> {
           children: [
             ClipRRect(
               borderRadius: T.brCard,
-              child: ApiImage(fileId: fileId),
+              // A PDF has no preview to load — the server never renders one —
+              // so it gets a document tile carrying its filename instead.
+              child: file.isPdf
+                  ? PdfTile(filename: file.filename)
+                  : ApiImage(fileId: file.id),
             ),
             Positioned(
               top: 6,
@@ -562,7 +626,7 @@ class _ExpenseSheetState extends ConsumerState<_ExpenseSheet> {
                 shape: const CircleBorder(),
                 child: InkWell(
                   customBorder: const CircleBorder(),
-                  onTap: () => setState(() => _fileIds.remove(fileId)),
+                  onTap: () => setState(() => _files.remove(file)),
                   child: const SizedBox(
                     width: 24,
                     height: 24,
@@ -593,3 +657,7 @@ class DottedZone extends StatelessWidget {
         child: child,
       );
 }
+
+/// What the attach sheet offers. Not [ImageSource]: a PDF is not an image, and
+/// the third option goes through the system file picker instead.
+enum _Attachment { camera, gallery, document }

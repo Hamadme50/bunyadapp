@@ -1,7 +1,7 @@
 name: bunyad
 description: "Bunyad — construction expense tracker"
 publish_to: 'none'
-version: 1.0.2+3
+version: 1.0.4+5
 
 environment:
   sdk: ^3.10.0
@@ -34,6 +34,14 @@ dependencies:
   # Opens the privacy policy and data-safety pages in the phone's browser.
   # Play requires both to be reachable from inside the app.
   url_launcher: ^6.3.1
+
+  # Attaching a PDF bill. image_picker only ever offers images, so choosing a
+  # document needs the system file picker.
+  file_picker: ^8.1.7
+  # A stored PDF is behind the bearer token, so it cannot be handed to the OS
+  # as a URL. It is downloaded to a temp file and opened from there.
+  path_provider: ^2.1.5
+  open_filex: ^4.5.0
 
   intl: ^0.19.0
   cupertino_icons: ^1.0.8

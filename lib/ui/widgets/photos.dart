@@ -1,11 +1,15 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:open_filex/open_filex.dart';
 
 import '../../core/tokens.dart';
+import '../../data/api_client.dart';
+import '../../data/models.dart';
 import '../../global.dart';
 import '../../state/session.dart';
 import 'primitives.dart';
+import 'toast.dart';
 
 /// A stored photo, fetched with the bearer token attached. Images live behind
 /// the same access rules as the project, so they cannot be plain URLs.
@@ -48,6 +52,79 @@ class ApiImage extends ConsumerWidget {
   }
 }
 
+/// What a PDF bill looks like in a strip of photos.
+///
+/// There is no preview to show: the server stores a document whole and never
+/// renders a thumbnail from it. So the tile says what the file is instead —
+/// the mark and the filename, which is the part a person is scanning for.
+class PdfTile extends StatelessWidget {
+  const PdfTile({super.key, required this.filename, this.compact = false});
+
+  final String filename;
+
+  /// The 46px strip tile, too small for a filename to be worth showing.
+  final bool compact;
+
+  @override
+  Widget build(BuildContext context) => ColoredBox(
+        color: T.accent100,
+        child: Padding(
+          padding: EdgeInsets.all(compact ? 4 : 8),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.picture_as_pdf_rounded,
+                size: compact ? 20 : 26,
+                color: T.accent700,
+              ),
+              if (!compact) ...[
+                const SizedBox(height: 4),
+                Text(
+                  filename,
+                  maxLines: 2,
+                  textAlign: TextAlign.center,
+                  overflow: TextOverflow.ellipsis,
+                  style: T.body.copyWith(
+                    fontSize: 9,
+                    height: 1.2,
+                    color: T.accent800,
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ),
+      );
+}
+
+/// Opens a stored PDF in whatever the phone uses to read documents.
+///
+/// The file is behind the bearer token, so it cannot simply be launched as a
+/// URL — it comes down to a temp file first. Returns once the viewer is open,
+/// or reports why it is not.
+Future<void> openStoredPdf(BuildContext context, WidgetRef ref, FileView file) async {
+  final messenger = ScaffoldMessenger.maybeOf(context);
+  void report(String message) {
+    messenger?.hideCurrentSnackBar();
+    Toast.error(context, message);
+  }
+
+  try {
+    final path = await ref.read(repositoryProvider).downloadToCache(file);
+    final opened = await OpenFilex.open(path, type: 'application/pdf');
+    if (opened.type != ResultType.done && context.mounted) {
+      // Most often "no app found" — a phone with no PDF reader installed.
+      report('Could not open ${file.filename}. Install a PDF reader and try again.');
+    }
+  } on ApiException catch (failure) {
+    if (context.mounted) report(failure.message);
+  } catch (_) {
+    if (context.mounted) report('Could not open ${file.filename}.');
+  }
+}
+
 /// `.thumb` — a 46px tile in an expense's photo strip.
 class PhotoThumb extends StatelessWidget {
   const PhotoThumb({super.key, required this.fileId, required this.onTap, this.size = 46});
@@ -70,6 +147,36 @@ class PhotoThumb extends StatelessWidget {
             boxShadow: T.shadowXs,
           ),
           child: ApiImage(fileId: fileId),
+        ),
+      );
+}
+
+/// The PDF equivalent of [PhotoThumb] — same 46px tile, no preview inside it.
+class PdfThumb extends StatelessWidget {
+  const PdfThumb({super.key, required this.filename, required this.onTap, this.size = 46});
+
+  final String filename;
+  final VoidCallback onTap;
+  final double size;
+
+  @override
+  Widget build(BuildContext context) => Semantics(
+        button: true,
+        label: 'Open $filename',
+        child: GestureDetector(
+          onTap: onTap,
+          child: Container(
+            width: size,
+            height: size,
+            clipBehavior: Clip.antiAlias,
+            decoration: BoxDecoration(
+              color: T.accent100,
+              borderRadius: T.brSm,
+              border: Border.all(color: T.hairline),
+              boxShadow: T.shadowXs,
+            ),
+            child: PdfTile(filename: filename, compact: true),
+          ),
         ),
       );
 }

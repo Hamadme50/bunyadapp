@@ -144,6 +144,10 @@ class Api {
 
   /// Absolute, because these go to an image widget rather than through Dio.
   static String fileUrl(String fileId) => '$kApiUrl/files/${Uri.encodeComponent(fileId)}';
+
+  /// The same file, relative — for the Dio client, which carries the base URL
+  /// and the bearer token itself.
+  static String fileUrlPath(String fileId) => '/files/${Uri.encodeComponent(fileId)}';
   static String thumbnailUrl(String fileId) =>
       '$kApiUrl/files/${Uri.encodeComponent(fileId)}/thumbnail';
 

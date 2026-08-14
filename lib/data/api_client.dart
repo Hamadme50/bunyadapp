@@ -180,6 +180,33 @@ class ApiClient {
     return _unwrap(response);
   }
 
+  /// Fetches a stored file as raw bytes.
+  ///
+  /// Everything else on this client speaks JSON; a PDF cannot. It also cannot
+  /// be handed to the phone as a plain URL, because the file sits behind the
+  /// same bearer token as the rest of the API — so it is pulled down here and
+  /// written to a temp file for the system viewer to open.
+  Future<List<int>> downloadBytes(String path) async {
+    Response<List<int>> response;
+    try {
+      response = await _dio.get<List<int>>(
+        path,
+        options: Options(responseType: ResponseType.bytes),
+      );
+    } on DioException catch (failure) {
+      throw _networkFailure(failure);
+    }
+
+    final status = response.statusCode ?? 0;
+    if (status == 401) {
+      _unauthorized.add(null);
+    }
+    if (status < 200 || status >= 300) {
+      throw ApiException(status, _defaultMessage(status));
+    }
+    return response.data ?? const [];
+  }
+
   /// Turns the response into data, or into the failure it describes.
   dynamic _unwrap(Response<dynamic> response) {
     final status = response.statusCode ?? 0;

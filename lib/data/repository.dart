@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
+import 'package:path_provider/path_provider.dart';
 
 import '../global.dart';
 import 'api_client.dart';
@@ -53,6 +56,21 @@ class BunyadRepository {
       // it — a bearer token is stateless, so this call is only politeness.
     }
     await client.clearToken();
+  }
+
+  /// Pulls a stored file down to a temp path so the phone can open it.
+  ///
+  /// Returns the local path. The file keeps its original name so the viewer's
+  /// title bar reads "invoice.pdf" rather than a database id.
+  Future<String> downloadToCache(FileView file) async {
+    final bytes = await client.downloadBytes(Api.fileUrlPath(file.id));
+    final dir = await getTemporaryDirectory();
+    // Namespaced by file id: two expenses may both carry an "invoice.pdf".
+    final folder = Directory('${dir.path}/bunyad-files/${file.id}');
+    await folder.create(recursive: true);
+    final target = File('${folder.path}/${file.filename}');
+    await target.writeAsBytes(bytes, flush: true);
+    return target.path;
   }
 
   /// Asks the server to email a reset link.

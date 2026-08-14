@@ -1,9 +1,23 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
     <!-- The whole app is an API client; without this it cannot do anything. -->
     <uses-permission android:name="android.permission.INTERNET"/>
     <!-- Photographing a bill on site. Optional so the app still installs on a
          device with no camera. -->
     <uses-feature android:name="android.hardware.camera" android:required="false"/>
+
+    <!-- open_filex (used only to open a PDF the app has already downloaded
+         into its own private cache directory) declares broad photo/video/audio
+         library access unconditionally, for apps that use it to open arbitrary
+         shared-storage files. Bunyad never touches the shared photo or video
+         library — the picker for a PDF is file_picker, and image_picker talks
+         to the camera and system photo picker directly, neither of which needs
+         a runtime permission. Removed rather than declared to Play, since
+         there is no feature here that actually uses them. -->
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" tools:node="remove"/>
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" tools:node="remove"/>
+    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" tools:node="remove"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" tools:node="remove"/>
 
     <!-- No networkSecurityConfig here on purpose: the platform default is
          HTTPS-only, which is what a Play build should ship. The debug source

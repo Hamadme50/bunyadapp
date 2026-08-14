@@ -385,7 +385,18 @@ class _StageScreenState extends ConsumerState<StageScreen> {
 // ═══════════════════════════════════════════════════════════════════════════
 
 /// `.expense-row` — the date block, what was bought, and what it cost.
-class _ExpenseRow extends StatelessWidget {
+/// "3 photos", "1 PDF", or "2 photos · 1 PDF" — whichever the strip holds.
+String _attachmentSummary(List<FileView> files) {
+  final pdfs = files.where((f) => f.isPdf).length;
+  final images = files.length - pdfs;
+  final parts = [
+    if (images > 0) plural(images, 'photo'),
+    if (pdfs > 0) '$pdfs PDF',
+  ];
+  return parts.join(' · ');
+}
+
+class _ExpenseRow extends ConsumerWidget {
   const _ExpenseRow({
     required this.expense,
     required this.currency,
@@ -399,7 +410,7 @@ class _ExpenseRow extends StatelessWidget {
   final VoidCallback onDelete;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final parts = dayParts(expense.expenseDate);
     final photos = expense.files;
 
@@ -496,23 +507,32 @@ class _ExpenseRow extends StatelessWidget {
               runSpacing: 8,
               crossAxisAlignment: WrapCrossAlignment.center,
               children: [
-                for (var i = 0; i < photos.length; i++)
-                  PhotoThumb(
-                    fileId: photos[i].id,
-                    onTap: () => openLightbox(
-                      context,
-                      [
-                        for (final file in photos)
-                          LightboxPhoto(
-                            fileId: file.id,
-                            caption: '${expense.name} — ${file.filename}',
-                          ),
-                      ],
-                      i,
+                // Only the images go in the lightbox, and the indexes have to
+                // be indexes into that list — a PDF sitting in the middle of
+                // the strip would otherwise open the wrong photo.
+                for (final file in photos)
+                  if (file.isPdf)
+                    PdfThumb(
+                      filename: file.filename,
+                      onTap: () => openStoredPdf(context, ref, file),
+                    )
+                  else
+                    PhotoThumb(
+                      fileId: file.id,
+                      onTap: () => openLightbox(
+                        context,
+                        [
+                          for (final image in photos.where((f) => !f.isPdf))
+                            LightboxPhoto(
+                              fileId: image.id,
+                              caption: '${expense.name} — ${image.filename}',
+                            ),
+                        ],
+                        photos.where((f) => !f.isPdf).toList().indexOf(file),
+                      ),
                     ),
-                  ),
                 Text(
-                  plural(photos.length, 'photo'),
+                  _attachmentSummary(photos),
                   style: T.body.copyWith(fontSize: 11, color: T.ink(0.5)),
                 ),
               ],
