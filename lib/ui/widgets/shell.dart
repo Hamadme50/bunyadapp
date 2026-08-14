@@ -40,6 +40,11 @@ class BunyadTopBar extends ConsumerWidget implements PreferredSizeWidget {
                 const Spacer(),
                 _NavButton(
                   label: 'Projects',
+                  // A project and a stage screen both sit inside Projects, so
+                  // the tab reads as active there — but it has to stay live,
+                  // because tapping the section you are in is how you get back
+                  // to its root. goDashboard replaces the stack rather than
+                  // pushing, so there is no second copy to worry about.
                   active: active == NavTab.projects,
                   onTap: () => context.goDashboard(),
                 ),
@@ -47,7 +52,9 @@ class BunyadTopBar extends ConsumerWidget implements PreferredSizeWidget {
                   _NavButton(
                     label: 'People',
                     active: active == NavTab.people,
-                    onTap: () => context.goAdmin(),
+                    // This one pushes, so tapping it while already there would
+                    // stack a duplicate.
+                    onTap: active == NavTab.people ? null : () => context.goAdmin(),
                   ),
                 const SizedBox(width: 4),
                 if (user != null)
@@ -58,7 +65,8 @@ class BunyadTopBar extends ConsumerWidget implements PreferredSizeWidget {
                       color: Colors.transparent,
                       borderRadius: T.brMd,
                       child: InkWell(
-                        onTap: () => context.goAccount(),
+                        // Already here: tapping again would push a second copy.
+                        onTap: active == NavTab.account ? null : () => context.goAccount(),
                         borderRadius: T.brMd,
                         child: Padding(
                           padding: const EdgeInsets.all(5),
@@ -141,7 +149,10 @@ class _NavButton extends StatelessWidget {
 
   final String label;
   final bool active;
-  final VoidCallback onTap;
+
+  /// Null leaves the tab showing but inert — for a destination you are already
+  /// on and that would otherwise be pushed twice.
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) => Material(

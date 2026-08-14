@@ -45,6 +45,13 @@ const Duration kUploadTimeout = Duration(minutes: 3);
 const String kAppName = 'Bunyad';
 const String kAppTagline = 'Expense book';
 
+/// The public documents, served by the same installation the app talks to, so
+/// a self-hosted Bunyad points at its own copy rather than somebody else's.
+/// These addresses are what the Play listing declares.
+const String kPrivacyUrl = '$kServerUrl/privacy';
+const String kDataSafetyUrl = '$kServerUrl/data-safety';
+const String kDeleteAccountUrl = '$kServerUrl/delete-account';
+
 /// Key the bearer token is filed under in secure storage.
 const String kTokenKey = 'bunyad.token';
 
@@ -95,6 +102,14 @@ class Api {
   static const String logout = '/auth/logout';
   static const String me = '/auth/me';
   static const String password = '/auth/password';
+
+  /// Asks for a reset link by email. Answers the same way whether or not the
+  /// address has an account, so the app cannot be used to test who is signed up.
+  static const String forgotPassword = '/auth/forgot-password';
+
+  /// Closes the signed-in account for good. POST rather than DELETE because it
+  /// carries the typed confirmation.
+  static const String deleteAccount = '/auth/delete-account';
 
   // ── projects ────────────────────────────────────────────────────────────
 

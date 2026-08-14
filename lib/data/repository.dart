@@ -55,6 +55,24 @@ class BunyadRepository {
     await client.clearToken();
   }
 
+  /// Asks the server to email a reset link.
+  ///
+  /// Succeeds whether or not the address has an account — the server answers
+  /// identically either way on purpose, so the screen must say "if that address
+  /// has an account" rather than "sent".
+  Future<void> forgotPassword(String email) =>
+      client.post(Api.forgotPassword, {'email': email.trim()});
+
+  /// Closes the account for good, then drops the token — the server has just
+  /// erased the row it names, so there is nothing left for it to open.
+  ///
+  /// [confirmation] is the word the account holder typed; the server checks it
+  /// again rather than trusting this app to have asked.
+  Future<void> deleteAccount(String confirmation) async {
+    await client.post(Api.deleteAccount, {'confirm': confirmation});
+    await client.clearToken();
+  }
+
   Future<SessionView> changePassword({String? currentPassword, required String newPassword}) async =>
       SessionView.fromJson(_obj(await client.post(Api.password, {
         'currentPassword': currentPassword,

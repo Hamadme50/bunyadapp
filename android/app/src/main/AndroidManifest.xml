@@ -5,10 +5,12 @@
          device with no camera. -->
     <uses-feature android:name="android.hardware.camera" android:required="false"/>
 
+    <!-- No networkSecurityConfig here on purpose: the platform default is
+         HTTPS-only, which is what a Play build should ship. The debug source
+         set adds the cleartext exemption for testing against a LAN server. -->
     <application
         android:label="Bunyad"
         android:name="${applicationName}"
-        android:networkSecurityConfig="@xml/network_security_config"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"
@@ -47,6 +49,13 @@
         <intent>
             <action android:name="android.intent.action.PROCESS_TEXT"/>
             <data android:mimeType="text/plain"/>
+        </intent>
+        <!-- Android 11+ hides other packages unless they are declared here.
+             Without this, url_launcher cannot find a browser and the privacy
+             policy and data-safety links silently do nothing. -->
+        <intent>
+            <action android:name="android.intent.action.VIEW"/>
+            <data android:scheme="https"/>
         </intent>
     </queries>
 </manifest>

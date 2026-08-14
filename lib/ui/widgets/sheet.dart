@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/tokens.dart';
+import 'fields.dart';
 import 'primitives.dart';
 
 /// `.sheet` — the frame every form lives in.
@@ -167,6 +168,136 @@ class FieldGrid extends StatelessWidget {
             ],
           );
         },
+      );
+}
+
+/// The confirmation for something with nothing behind it — no undo, no restore.
+///
+/// A tap is too cheap for that, so the word has to be typed out before the
+/// button will do anything. Returns true only once it matches and is confirmed.
+Future<bool> confirmTypedSheet(
+  BuildContext context, {
+  required String title,
+  required String body,
+  required String word,
+  required String confirmLabel,
+}) async {
+  final result = await showDialog<bool>(
+    context: context,
+    barrierColor: T.neutral900.withValues(alpha: 0.42),
+    builder: (context) => _TypedConfirmDialog(
+      title: title,
+      body: body,
+      word: word,
+      confirmLabel: confirmLabel,
+    ),
+  );
+  return result ?? false;
+}
+
+class _TypedConfirmDialog extends StatefulWidget {
+  const _TypedConfirmDialog({
+    required this.title,
+    required this.body,
+    required this.word,
+    required this.confirmLabel,
+  });
+
+  final String title;
+  final String body;
+  final String word;
+  final String confirmLabel;
+
+  @override
+  State<_TypedConfirmDialog> createState() => _TypedConfirmDialogState();
+}
+
+class _TypedConfirmDialogState extends State<_TypedConfirmDialog> {
+  final _typed = TextEditingController();
+
+  @override
+  void dispose() {
+    _typed.dispose();
+    super.dispose();
+  }
+
+  bool get _matches => _typed.text.trim().toLowerCase() == widget.word.toLowerCase();
+
+  @override
+  Widget build(BuildContext context) => Dialog(
+        backgroundColor: T.bg,
+        insetPadding: const EdgeInsets.all(T.s4),
+        shape: RoundedRectangleBorder(borderRadius: T.brLg),
+        clipBehavior: Clip.antiAlias,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Container(
+              color: T.raised,
+              padding: const EdgeInsets.all(T.s4),
+              child: Text(widget.title, style: T.heading(20)),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(T.s4),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(widget.body, style: T.body.copyWith(fontSize: 14, color: T.ink(0.85))),
+                  const SizedBox(height: T.s4),
+                  Text.rich(
+                    TextSpan(
+                      children: [
+                        const TextSpan(text: 'Type '),
+                        TextSpan(
+                          text: widget.word,
+                          style: T.bodySm.copyWith(fontWeight: FontWeight.w800, color: T.accent700),
+                        ),
+                        const TextSpan(text: ' to confirm.'),
+                      ],
+                    ),
+                    style: T.bodySm.copyWith(color: T.ink(0.7)),
+                  ),
+                  const SizedBox(height: T.s2),
+                  BunyadInput(
+                    controller: _typed,
+                    autofocus: true,
+                    hintText: widget.word,
+                    // The word is lower case; the keyboard should not fight it.
+                    textCapitalization: TextCapitalization.none,
+                    textInputAction: TextInputAction.done,
+                    onChanged: (_) => setState(() {}),
+                    onSubmitted: (_) {
+                      if (_matches) Navigator.of(context).pop(true);
+                    },
+                  ),
+                ],
+              ),
+            ),
+            Container(
+              color: T.raised,
+              padding: const EdgeInsets.all(T.s3),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Btn(
+                    label: 'Cancel',
+                    kind: BtnKind.secondary,
+                    onPressed: () => Navigator.of(context).pop(false),
+                  ),
+                  const SizedBox(width: T.s2),
+                  Btn(
+                    label: widget.confirmLabel,
+                    kind: BtnKind.danger,
+                    // Stays dead until the word is right — that is the safeguard.
+                    onPressed: _matches ? () => Navigator.of(context).pop(true) : null,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       );
 }
 

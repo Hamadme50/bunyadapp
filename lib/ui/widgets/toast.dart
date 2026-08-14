@@ -8,15 +8,30 @@ import '../../core/tokens.dart';
 class Toast {
   const Toast._();
 
+  /// The app's own messenger, handed to [MaterialApp.scaffoldMessengerKey], so
+  /// a toast can be raised from outside the widget tree.
+  static final GlobalKey<ScaffoldMessengerState> messengerKey =
+      GlobalKey<ScaffoldMessengerState>();
+
   static void success(BuildContext context, String message) =>
-      _show(context, message, error: false);
+      _show(ScaffoldMessenger.maybeOf(context), message, error: false);
 
-  static void error(BuildContext context, String message) => _show(context, message, error: true);
+  static void error(BuildContext context, String message) =>
+      _show(ScaffoldMessenger.maybeOf(context), message, error: true);
 
-  static void info(BuildContext context, String message) => _show(context, message, error: false);
+  static void info(BuildContext context, String message) =>
+      _show(ScaffoldMessenger.maybeOf(context), message, error: false);
 
-  static void _show(BuildContext context, String message, {required bool error}) {
-    final messenger = ScaffoldMessenger.maybeOf(context);
+  /// No context needed — the session ending is noticed by a listener rather
+  /// than by a screen. Deferred a frame because that listener can fire while
+  /// the tree is still building.
+  static void global(String message, {bool error = false}) {
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) => _show(messengerKey.currentState, message, error: error),
+    );
+  }
+
+  static void _show(ScaffoldMessengerState? messenger, String message, {required bool error}) {
     if (messenger == null) return;
 
     messenger

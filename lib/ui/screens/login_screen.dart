@@ -145,7 +145,21 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       ),
                     ),
 
-                    const SizedBox(height: T.s4),
+                    // Under the password, where somebody looks the moment the
+                    // one they tried did not work.
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: Btn(
+                        label: 'Forgot password?',
+                        kind: BtnKind.ghost,
+                        compact: true,
+                        onPressed: _busy
+                            ? null
+                            : () => context.goForgotPassword(_email.text.trim()),
+                      ),
+                    ),
+
+                    const SizedBox(height: T.s3),
                     Btn(
                       label: 'Log in',
                       block: true,

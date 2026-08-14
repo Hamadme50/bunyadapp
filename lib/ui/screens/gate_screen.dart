@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../../core/tokens.dart';
 import '../../global.dart';
 import '../routes.dart';
-import '../widgets/shell.dart';
+import '../widgets/primitives.dart';
 
 /// The first screen a signed-out visitor sees: the site photo, the promise,
 /// and the only two doors in.
@@ -49,8 +49,9 @@ class GateScreen extends StatelessWidget {
                     Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const BrandMark(color: T.bg, shadow: false),
-                        const SizedBox(width: 10),
+                        // The same mark the signed-in top bar carries.
+                        const BunyadLogo(size: 30),
+                        const SizedBox(width: 8),
                         Text(
                           kAppName.toUpperCase(),
                           style: TextStyle(

@@ -169,7 +169,11 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
         padding: const EdgeInsets.only(bottom: T.s3),
         child: _ProjectRow(
           project: project,
-          onTap: () => context.goProject(project.id),
+          // The project's totals feed the strip at the top of this screen.
+          onTap: () async {
+            await context.goProject(project.id);
+            if (mounted) await _refresh();
+          },
         ),
       ));
     }
@@ -285,7 +289,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   Future<void> _newProject() async {
     final created = await openProjectSheet(context, ref);
     if (created != null && mounted) {
-      context.goProject(created.id);
+      await context.goProject(created.id);
+      if (mounted) await _refresh();
     }
   }
 }

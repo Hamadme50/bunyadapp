@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/formatting.dart';
 import '../../core/tokens.dart';
@@ -27,6 +28,7 @@ class _AccountScreenState extends ConsumerState<AccountScreen> {
   final _confirm = TextEditingController();
 
   bool _busy = false;
+  bool _deleting = false;
   Map<String, String> _errors = {};
 
   @override
@@ -178,14 +180,94 @@ class _AccountScreenState extends ConsumerState<AccountScreen> {
             ),
           ),
 
-          const SizedBox(height: T.s8),
+          const SectionHead(title: 'Privacy'),
           Text(
-            'Connected to $kServerUrl',
-            style: T.body.copyWith(fontSize: 11, color: T.ink(0.4)),
+            'What Bunyad records, who else can see it, and how long it is kept. '
+            'Both open in your browser.',
+            style: T.body.copyWith(fontSize: 13, color: T.ink(0.6)),
+          ),
+          const SizedBox(height: T.s3),
+          Wrap(
+            spacing: T.s2,
+            runSpacing: T.s2,
+            children: [
+              Btn(
+                label: 'Privacy policy',
+                kind: BtnKind.secondary,
+                icon: Icons.open_in_new_rounded,
+                onPressed: () => _open(kPrivacyUrl),
+              ),
+              Btn(
+                label: 'Data safety',
+                kind: BtnKind.secondary,
+                icon: Icons.open_in_new_rounded,
+                onPressed: () => _open(kDataSafetyUrl),
+              ),
+            ],
+          ),
+
+          const SectionHead(title: 'Delete account'),
+          Text(
+            'This erases your account, every project you own, and every expense and '
+            'photograph on those projects. It happens at once and cannot be undone.',
+            style: T.body.copyWith(fontSize: 13, color: T.ink(0.6)),
+          ),
+          const SizedBox(height: T.s2),
+          Text(
+            'Entries you added to somebody else’s project stay with that project — '
+            'they are the owner’s records — but stop carrying your name.',
+            style: T.body.copyWith(fontSize: 12, color: T.ink(0.5)),
+          ),
+          const SizedBox(height: T.s3),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Btn(
+              label: 'Delete account',
+              kind: BtnKind.danger,
+              icon: Icons.delete_forever_rounded,
+              busy: _deleting,
+              busyLabel: 'Deleting…',
+              onPressed: _deleteAccount,
+            ),
           ),
         ],
       ),
     );
+  }
+
+  Future<void> _open(String url) async {
+    final launched = await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+    if (!launched && mounted) {
+      // No browser answered the intent — the address is still useful to see.
+      Toast.error(context, 'Could not open a browser. The page is at $url');
+    }
+  }
+
+  Future<void> _deleteAccount() async {
+    if (_deleting) return;
+
+    final confirmed = await confirmTypedSheet(
+      context,
+      title: 'Delete your account?',
+      body: 'Your account, every project you own, and every expense and photograph on '
+          'them will be erased. This cannot be undone.',
+      word: 'delete',
+      confirmLabel: 'Delete account',
+    );
+    if (!confirmed || !mounted) return;
+
+    setState(() => _deleting = true);
+    try {
+      await ref.read(repositoryProvider).deleteAccount('delete');
+      // The row the token names is gone, so there is nothing to sign out of —
+      // dropping the session locally is all that is left. Not "expired": this
+      // was asked for, and does not want the session-ended notice.
+      await ref.read(sessionProvider.notifier).signOutLocally(expired: false);
+    } on ApiException catch (failure) {
+      if (!mounted) return;
+      setState(() => _deleting = false);
+      Toast.error(context, failure.message);
+    }
   }
 
   Future<void> _signOut() async {

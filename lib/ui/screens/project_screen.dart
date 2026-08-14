@@ -310,7 +310,12 @@ class _ProjectScreenState extends ConsumerState<ProjectScreen> {
             stage: project.stages[i],
             index: i,
             canEdit: canEdit,
-            onOpen: () => context.goStage(project.id, project.stages[i].id),
+            // Expenses logged on the stage change this screen's totals, so
+            // wait for it to close and read them again.
+            onOpen: () async {
+              await context.goStage(project.id, project.stages[i].id);
+              if (mounted) await _reload();
+            },
             onEdit: () async {
               _apply(await openStageSheet(context, projectId: project.id, stage: project.stages[i]));
             },

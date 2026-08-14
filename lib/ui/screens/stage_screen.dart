@@ -158,7 +158,7 @@ class _StageScreenState extends ConsumerState<StageScreen> {
             children: [
               BackLink(
                 label: data.projectName,
-                onTap: () => context.goProject(widget.projectId),
+                onTap: () => context.goBack(Routes.project(widget.projectId)),
               ),
               const SizedBox(height: T.s3),
 

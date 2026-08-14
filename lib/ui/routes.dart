@@ -7,6 +7,7 @@ import 'screens/account_screen.dart';
 import 'screens/admin_screen.dart';
 import 'screens/boot_screen.dart';
 import 'screens/dashboard_screen.dart';
+import 'screens/forgot_password_screen.dart';
 import 'screens/gate_screen.dart';
 import 'screens/join_screen.dart';
 import 'screens/login_screen.dart';
@@ -22,6 +23,7 @@ class Routes {
   static const String gate = '/gate';
   static const String join = '/join';
   static const String login = '/login';
+  static const String forgotPassword = '/forgot-password';
   static const String password = '/password';
   static const String dashboard = '/';
   static const String people = '/people';
@@ -33,15 +35,47 @@ class Routes {
 }
 
 /// Short names for the navigation the screens actually do.
+///
+/// A move deeper pushes, so the system back gesture returns to the screen
+/// underneath instead of leaving the app. Moves back out to the gate or the
+/// project list replace the stack instead — those are the two roots, and
+/// pushing them would stack a second copy on top of their own children.
 extension BunyadNavigation on BuildContext {
   void goGate() => go(Routes.gate);
-  void goJoin() => go(Routes.join);
-  void goLogin() => go(Routes.login);
+  void goJoin() => push(Routes.join);
+  void goLogin() => push(Routes.login);
+
+  /// [email] pre-fills the form, so a failed sign-in does not make anyone type
+  /// their address again.
+  void goForgotPassword([String? email]) => push(
+        email == null || email.isEmpty
+            ? Routes.forgotPassword
+            : '${Routes.forgotPassword}?email=${Uri.encodeQueryComponent(email)}',
+      );
   void goDashboard() => go(Routes.dashboard);
-  void goProject(String projectId) => go(Routes.project(projectId));
-  void goStage(String projectId, String stageId) => go(Routes.stage(projectId, stageId));
-  void goAdmin() => go(Routes.people);
-  void goAccount() => go(Routes.account);
+
+  /// These return the push, which completes when the pushed screen pops.
+  ///
+  /// A screen that stays alive underneath keeps whatever it last loaded, so a
+  /// caller that shows figures the child can change — a stage total, a project
+  /// total — must await this and reload. Before these moves pushed, every one
+  /// of them replaced the stack and the parent rebuilt from scratch, which hid
+  /// the problem.
+  Future<void> goProject(String projectId) => push(Routes.project(projectId));
+  Future<void> goStage(String projectId, String stageId) =>
+      push(Routes.stage(projectId, stageId));
+  Future<void> goAdmin() => push(Routes.people);
+  Future<void> goAccount() => push(Routes.account);
+
+  /// What a back link does: undo the push that got here, falling back to the
+  /// address for a deep link that arrived without a stack under it.
+  void goBack(String fallback) {
+    if (canPop()) {
+      pop();
+    } else {
+      go(fallback);
+    }
+  }
 }
 
 /// Rebuilds the router's redirect whenever the session changes.
@@ -70,6 +104,7 @@ final routerProvider = Provider<GoRouter>((ref) {
           at == Routes.gate ||
           at == Routes.join ||
           at == Routes.login ||
+          at == Routes.forgotPassword ||
           at == Routes.password;
 
       return switch (status) {
@@ -77,8 +112,13 @@ final routerProvider = Provider<GoRouter>((ref) {
         SessionStatus.unreachable => at == Routes.boot ? null : Routes.boot,
         // The gate is the way in by default; joining and signing in are each
         // one tap from there, so all three addresses are allowed to stand.
-        SessionStatus.signedOut =>
-          (at == Routes.gate || at == Routes.join || at == Routes.login) ? null : Routes.gate,
+        SessionStatus.signedOut => (at == Routes.gate ||
+                at == Routes.join ||
+                at == Routes.login ||
+                // Forgetting your password is something you do signed out.
+                at == Routes.forgotPassword)
+            ? null
+            : Routes.gate,
         // An issued password has to be replaced before anything else opens.
         SessionStatus.mustChangePassword => at == Routes.password ? null : Routes.password,
         SessionStatus.signedIn => atSignedOutScreen ? Routes.dashboard : null,
@@ -90,6 +130,11 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: Routes.gate, builder: (context, state) => const GateScreen()),
       GoRoute(path: Routes.join, builder: (context, state) => const JoinScreen()),
       GoRoute(path: Routes.login, builder: (context, state) => const LoginScreen()),
+      GoRoute(
+        path: Routes.forgotPassword,
+        builder: (context, state) =>
+            ForgotPasswordScreen(email: state.uri.queryParameters['email']),
+      ),
       GoRoute(path: Routes.password, builder: (context, state) => const PasswordScreen()),
       GoRoute(path: Routes.dashboard, builder: (context, state) => const DashboardScreen()),
       GoRoute(path: Routes.people, builder: (context, state) => const AdminScreen()),

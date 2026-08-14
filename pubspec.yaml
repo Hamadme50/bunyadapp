@@ -1,7 +1,7 @@
 name: bunyad
 description: "Bunyad — construction expense tracker"
 publish_to: 'none'
-version: 1.0.0+1
+version: 1.0.1+2
 
 environment:
   sdk: ^3.10.0
@@ -30,6 +30,10 @@ dependencies:
 
   # Thumbnails, cached on disk. Needs auth headers, which it forwards.
   cached_network_image: ^3.4.1
+
+  # Opens the privacy policy and data-safety pages in the phone's browser.
+  # Play requires both to be reachable from inside the app.
+  url_launcher: ^6.3.1
 
   intl: ^0.19.0
   cupertino_icons: ^1.0.8

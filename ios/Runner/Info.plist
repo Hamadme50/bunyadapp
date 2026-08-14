@@ -14,11 +14,13 @@
 		<string>6.0</string>
 		<key>CFBundleName</key>
 		<string>Bunyad</string>
-		<!-- Bunyad is normally reached over plain http on a LAN address. Once the
-	     server is behind HTTPS, drop this whole NSAppTransportSecurity block. -->
+		<!-- Local networking only, not a blanket exception. The server is on
+		     HTTPS, so arbitrary cleartext is not needed, and NSAllowsArbitraryLoads
+		     is something App Review asks you to justify. NSAllowsLocalNetworking
+		     keeps a LAN http:// dev server working without that conversation. -->
 		<key>NSAppTransportSecurity</key>
 		<dict>
-			<key>NSAllowsArbitraryLoads</key>
+			<key>NSAllowsLocalNetworking</key>
 			<true/>
 		</dict>
 		<key>NSCameraUsageDescription</key>

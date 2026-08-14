@@ -27,13 +27,18 @@ final repositoryProvider = Provider<BunyadRepository>(
 enum SessionStatus { checking, signedOut, mustChangePassword, signedIn, unreachable }
 
 class SessionState {
-  const SessionState({required this.status, this.user, this.message});
+  const SessionState({required this.status, this.user, this.message, this.expired = false});
 
   final SessionStatus status;
   final UserView? user;
 
   /// Why the app could not start, when [status] is [SessionStatus.unreachable].
   final String? message;
+
+  /// True when this sign-out was the token dying rather than the user asking.
+  /// The app root reads it to say so, instead of dropping somebody at the gate
+  /// mid-task with no explanation.
+  final bool expired;
 
   const SessionState.checking() : this._(SessionStatus.checking);
   const SessionState.signedOut() : this._(SessionStatus.signedOut);
@@ -100,10 +105,34 @@ class SessionController extends StateNotifier<SessionState> {
     state = const SessionState.signedOut();
   }
 
-  /// The token is already void — drop it without asking the server.
-  Future<void> signOutLocally() async {
+  /// Drop the token without asking the server — either because it is already
+  /// void, or because the account behind it no longer exists.
+  ///
+  /// [expired] separates the two: a token that died under someone deserves the
+  /// notice on the way out, a deliberately deleted account does not.
+  Future<void> signOutLocally({bool expired = true}) async {
     await _ref.read(apiClientProvider).clearToken();
-    state = const SessionState.signedOut();
+    state = SessionState(status: SessionStatus.signedOut, expired: expired);
+  }
+
+  /// Called when the app comes back to the foreground.
+  ///
+  /// A token that expires while the app sits in the background goes unnoticed
+  /// until something is asked of the server — which could be the next morning,
+  /// with a screenful of stale figures in between. This asks straight away;
+  /// the 401 listener in the constructor turns the answer into a sign-out.
+  Future<void> revalidate() async {
+    if (state.status != SessionStatus.signedIn &&
+        state.status != SessionStatus.mustChangePassword) {
+      return;
+    }
+    try {
+      _apply(await _repo.me());
+    } on ApiException catch (failure) {
+      // A 401 has already signed out through onUnauthorized. Anything else is
+      // the network, and a dropped signal is no reason to end a session.
+      if (failure.isUnauthorized) return;
+    }
   }
 
   void applySession(SessionView session) => _apply(session);
